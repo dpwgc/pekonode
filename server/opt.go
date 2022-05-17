@@ -15,14 +15,14 @@ func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, 
 	status[1] = true
 
 	nodeList := NodeList{
-		Nodes:      nodes,
-		Amount:     amount,
-		Cycle:      cycle,
-		Buffer:     buffer,
-		Timeout:    timeout,
+		nodes:      nodes,
+		amount:     amount,
+		cycle:      cycle,
+		buffer:     buffer,
+		timeout:    timeout,
 		localNode:  node,
-		ListenAddr: listenAddr,
-		ListenPort: listenPort,
+		listenAddr: listenAddr,
+		listenPort: listenPort,
 		status:     status,
 		isPrint:    isPrint,
 	}
@@ -37,7 +37,7 @@ func (nodeList *NodeList) Join() {
 	go task(nodeList)
 
 	//监听队列（UDP监听缓冲区）
-	var mq = make(chan []byte, nodeList.Buffer)
+	var mq = make(chan []byte, nodeList.buffer)
 
 	//监听其他节点的信息，并放入mq队列
 	go listen(nodeList, mq)
@@ -50,23 +50,23 @@ func (nodeList *NodeList) Join() {
 
 // Stop 停止同步
 func (nodeList *NodeList) Stop() {
-	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Stop]:", nodeList.ListenAddr, nodeList.ListenPort)
+	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Stop]:", nodeList.listenAddr, nodeList.listenPort)
 	nodeList.status[1] = false
 }
 
 // Set 向本地节点列表中加入其他节点
 func (nodeList *NodeList) Set(node Node) {
-	nodeList.Nodes.Store(node, time.Now().Unix())
+	nodeList.nodes.Store(node, time.Now().Unix())
 }
 
 // Get 获取本地节点列表
 func (nodeList *NodeList) Get() []Node {
 	var nodes []Node
 	// 遍历所有sync.Map中的键值对
-	nodeList.Nodes.Range(func(k, v interface{}) bool {
+	nodeList.nodes.Range(func(k, v interface{}) bool {
 		//如果该节点超过一段时间没有更新
-		if v.(int64)+nodeList.Timeout < time.Now().Unix() {
-			nodeList.Nodes.Delete(k)
+		if v.(int64)+nodeList.timeout < time.Now().Unix() {
+			nodeList.nodes.Delete(k)
 		} else {
 			nodes = append(nodes, k.(Node))
 		}
