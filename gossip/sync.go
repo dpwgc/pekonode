@@ -1,4 +1,4 @@
-package server
+package gossip
 
 import (
 	"encoding/json"
@@ -21,7 +21,7 @@ func task(nodeList *NodeList) {
 
 		//发送本地节点信息
 		broadcast(nodeList, sn)
-		nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Listen]:", nodeList.localNode, "/ [Node list]:", nodeList.Get())
+		nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Listen]:", nodeList.localNode, "/ [Node gossip]:", nodeList.Get())
 		time.Sleep(time.Duration(nodeList.cycle) * time.Second)
 	}
 }

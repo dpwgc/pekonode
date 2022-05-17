@@ -1,7 +1,7 @@
 package main
 
 import (
-	"pekonode/server"
+	"pekonode/gossip"
 	"time"
 )
 
@@ -22,15 +22,15 @@ func main() {
 	}
 }
 
-func createNode(port int) server.NodeList {
-	var node server.Node
+func createNode(port int) gossip.NodeList {
+	var node gossip.Node
 	node.Addr = "0.0.0.0"
 	node.Port = port
 	node.Tag = "test"
 
-	nodeList := server.New(node, "0.0.0.0", port, 3, 10, 5, 30, true)
+	nodeList := gossip.New(node, "0.0.0.0", port, 3, 10, 5, 30, true)
 
-	nodeList.Set(server.Node{
+	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8000,
 		Tag:  "test",
@@ -40,6 +40,6 @@ func createNode(port int) server.NodeList {
 	return nodeList
 }
 
-func stop(nodeList server.NodeList) {
+func stop(nodeList gossip.NodeList) {
 	nodeList.Stop()
 }
