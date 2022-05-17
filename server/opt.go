@@ -12,6 +12,9 @@ func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, 
 	var nodes sync.Map
 	nodes.Store(node, time.Now().Unix())
 
+	var s = make(map[int]bool, 1)
+	s[1] = true
+
 	nodeList := NodeList{
 		Nodes:      nodes,
 		Amount:     amount,
@@ -21,7 +24,7 @@ func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, 
 		localNode:  node,
 		ListenAddr: listenAddr,
 		ListenPort: listenPort,
-		status:     true,
+		status:     s,
 	}
 
 	return nodeList
@@ -43,10 +46,10 @@ func (nodeList *NodeList) Join() {
 	go consume(nodeList, mq)
 }
 
-// Quit 退出集群
-func (nodeList *NodeList) Quit() {
-	fmt.Println("[Quit]: ", nodeList.ListenAddr+":", nodeList.ListenPort)
-	nodeList.status = false
+// Stop 停止同步
+func (nodeList *NodeList) Stop() {
+	fmt.Println("[Quit]:", nodeList.ListenAddr, nodeList.ListenPort)
+	nodeList.status[1] = false
 }
 
 // Set 向本地节点列表中加入其他节点

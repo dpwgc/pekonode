@@ -15,7 +15,7 @@ type NodeList struct {
 	ListenAddr string //本地节点列表更新监听地址（这两一般与本地节点Node设置相同）
 	ListenPort int    //本地节点列表更新监听端口
 
-	status bool //本地节点列表更新状态（true：正常运行，false：退出集群）
+	status map[int]bool //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
 }
 
 // Node 节点

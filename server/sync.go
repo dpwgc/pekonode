@@ -9,13 +9,14 @@ import (
 //定时同步任务
 func task(nodeList *NodeList) {
 	for {
-		//退出集群，关闭定时任务协程
-		if !nodeList.status {
+		//停止同步
+		if !nodeList.status[1] {
 			break
 		}
+
 		//发送本地节点信息
 		broadcast(nodeList, nodeList.localNode)
-		fmt.Println("[Listen]:", nodeList.localNode, " / [Node list]:", nodeList.Get())
+		fmt.Println("[Listen]:", nodeList.localNode, "/ [Node list]:", nodeList.Get())
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
 	}
 }
@@ -29,10 +30,6 @@ func listen(nodeList *NodeList, mq chan []byte) {
 //消费信息
 func consume(nodeList *NodeList, mq chan []byte) {
 	for {
-		//退出集群，关闭消费协程
-		if !nodeList.status {
-			break
-		}
 		//从监听队列中取出消息
 		data := <-mq
 		var node Node
@@ -59,6 +56,7 @@ func consume(nodeList *NodeList, mq chan []byte) {
 
 //广播推送信息
 func broadcast(nodeList *NodeList, node Node) {
+
 	//取出所有未过期的节点
 	nodes := nodeList.Get()
 	//如果当前节点数量小于Amount最大推送数量
