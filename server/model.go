@@ -24,5 +24,5 @@ type NodeList struct {
 type Node struct {
 	Addr string //节点IP地址（公网环境下填公网IP）
 	Port int    //端口号
-	Data string //节点携带的数据
+	Tag  string //节点标签（可以写一些基本信息）
 }
