@@ -8,20 +8,20 @@
 package main
 
 import (
-	"pekonode/server"
+	"pekonode/gossip"
 	"time"
 )
 
 func main() {
 
 	//设置本地节点信息
-	var node server.Node
+	var node gossip.Node
 	node.Addr = "0.0.0.0"   //公网环境下请填公网IP
 	node.Port = 8000
 	node.Tag = "test"
 
 	//创建本地节点列表，同时将本地节点信息加入节点列表，设置本地UDP监听服务地址及其他参数
-	nodeList := server.New(node, "0.0.0.0", 8000, 3, 10, 5, 30, true)
+	nodeList := gossip.New(node, "0.0.0.0", 8000, 3, 10, 5, 30, true)
 
 	//将本地节点列表加入到Gossip集群中（后台启动Gossip同步协程，与其他服务节点的节点列表进行数据同步）
 	nodeList.Join()
@@ -41,23 +41,23 @@ func main() {
 package main
 
 import (
-	"pekonode/server"
+	"pekonode/gossip"
 	"time"
 )
 
 func main() {
 
 	//设置本地节点信息
-	var node server.Node
+	var node gossip.Node
 	node.Addr = "0.0.0.0"   //公网环境下请填公网IP
 	node.Port = 8001
 	node.Tag = "test"
 
 	//创建本地节点列表，同时将本地节点信息加入节点列表，设置本地UDP监听服务地址及其他参数
-	nodeList := server.New(node, "0.0.0.0", 8001, 3, 10, 5, 30, true)
+	nodeList := gossip.New(node, "0.0.0.0", 8001, 3, 10, 5, 30, true)
 
 	//将一个新的节点信息加入到本地节点列表（Gossip同步协程启动后，将向这些节点发送同步信息）
-	nodeList.Set(server.Node{
+	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8000, //这里将第一个启动的8000节点信息添加进8001节点的本地节点列表中
 		Tag:  "test",
