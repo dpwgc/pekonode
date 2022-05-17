@@ -18,7 +18,7 @@ func main() {
 	//stop(nl)
 
 	for {
-		time.Sleep(3000)
+		time.Sleep(10 * time.Second)
 	}
 }
 
