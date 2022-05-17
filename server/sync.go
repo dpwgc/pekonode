@@ -31,9 +31,9 @@ func listen(nodeList *NodeList, mq chan []byte) {
 func consume(nodeList *NodeList, mq chan []byte) {
 	for {
 		//从监听队列中取出消息
-		data := <-mq
+		bs := <-mq
 		var node Node
-		err := json.Unmarshal(data, &node)
+		err := json.Unmarshal(bs, &node)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -49,7 +49,7 @@ func consume(nodeList *NodeList, mq chan []byte) {
 			continue
 		}
 
-		//广播推送
+		//广播推送该节点
 		broadcast(nodeList, node)
 	}
 }

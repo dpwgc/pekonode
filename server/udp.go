@@ -48,11 +48,11 @@ func Listen(addr string, port int, mq chan []byte) {
 	}(conn)
 
 	for {
-		data := make([]byte, 4096)
-		_, _, err := conn.ReadFromUDP(data)
+		bs := make([]byte, 4096)
+		_, _, err := conn.ReadFromUDP(bs)
 
 		var b []byte
-		for _, v := range data {
+		for _, v := range bs {
 			if v == 0x0 {
 				break
 			}
