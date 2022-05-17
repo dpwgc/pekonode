@@ -27,7 +27,7 @@ func createNode(port int) server.NodeList {
 	node.Addr = "0.0.0.0"
 	node.Port = port
 
-	nodeList := server.New(node, "0.0.0.0", port, 3, 10, 5, 30)
+	nodeList := server.New(node, "0.0.0.0", port, 3, 10, 5, 30, true)
 
 	nodeList.Set(server.Node{
 		Addr: "0.0.0.0",

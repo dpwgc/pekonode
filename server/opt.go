@@ -1,19 +1,18 @@
 package server
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
 
 // New 创建本地节点列表
-func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, buffer int, timeout int64) NodeList {
+func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, buffer int, timeout int64, isPrint bool) NodeList {
 
 	var nodes sync.Map
 	nodes.Store(node, time.Now().Unix())
 
-	var s = make(map[int]bool, 1)
-	s[1] = true
+	var status = make(map[int]bool, 1)
+	status[1] = true
 
 	nodeList := NodeList{
 		Nodes:      nodes,
@@ -24,7 +23,8 @@ func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, 
 		localNode:  node,
 		ListenAddr: listenAddr,
 		ListenPort: listenPort,
-		status:     s,
+		status:     status,
+		isPrint:    isPrint,
 	}
 
 	return nodeList
@@ -44,11 +44,13 @@ func (nodeList *NodeList) Join() {
 
 	//消费mq队列中的信息
 	go consume(nodeList, mq)
+
+	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Join]:", nodeList.localNode)
 }
 
 // Stop 停止同步
 func (nodeList *NodeList) Stop() {
-	fmt.Println("[Quit]:", nodeList.ListenAddr, nodeList.ListenPort)
+	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Stop]:", nodeList.ListenAddr, nodeList.ListenPort)
 	nodeList.status[1] = false
 }
 

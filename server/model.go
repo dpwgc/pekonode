@@ -16,6 +16,8 @@ type NodeList struct {
 	ListenPort int    //本地节点列表更新监听端口
 
 	status map[int]bool //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
+
+	isPrint bool //是否打印信息到控制台
 }
 
 // Node 节点

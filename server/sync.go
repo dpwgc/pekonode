@@ -16,7 +16,7 @@ func task(nodeList *NodeList) {
 
 		//发送本地节点信息
 		broadcast(nodeList, nodeList.localNode)
-		fmt.Println("[Listen]:", nodeList.localNode, "/ [Node list]:", nodeList.Get())
+		nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Listen]:", nodeList.localNode, "/ [Node list]:", nodeList.Get())
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
 	}
 }
