@@ -1,6 +1,11 @@
 # PekoNode
 
-## 基于Golang整合UDP实现的Gossip协议工具包
+## 一个基于Golang整合UDP实现的Gossip协议工具包
+
+### 导入包
+```
+go get github.com/dpwgc/pekonode
+```
 
 ### 简单示例
 * Gossip集群的第一个服务节点，8000节点启动。
@@ -8,7 +13,7 @@
 package main
 
 import (
-	"pekonode/gossip"
+	"github.com/dpwgc/pekonode/gossip"
 	"time"
 )
 
@@ -16,9 +21,9 @@ func main() {
 
 	//设置本地节点信息
 	var node gossip.Node
-	node.Addr = "0.0.0.0"   //公网环境下请填公网IP
-	node.Port = 8000
-	node.Tag = "test"
+	node.Addr = "0.0.0.0"   //节点的IP地址，公网环境下请填公网IP
+	node.Port = 8000        //节点的服务端口号
+	node.Tag = "test"       //节点标签，随意填写
 
 	//创建本地节点列表，同时将本地节点信息加入节点列表，设置本地UDP监听服务地址及其他参数
 	nodeList := gossip.New(node, "0.0.0.0", 8000, 3, 10, 5, 30, true)
@@ -41,7 +46,7 @@ func main() {
 package main
 
 import (
-	"pekonode/gossip"
+	"github.com/dpwgc/pekonode/gossip"
 	"time"
 )
 
