@@ -27,9 +27,9 @@ type Node struct {
 	Tag  string //节点标签（可以写一些基本信息）
 }
 
-// sendNode 节点信息发送数据包
+// 节点心跳数据包
 type sendNode struct {
-	Node       Node         //节点信息
-	TargetNode Node         //目标节点信息（数据包发送目标对象）
-	SentList   map[Node]int //该数据包经过的节点列表（已传染的节点列表）
+	Node       Node           //心跳数据包中的节点信息
+	TargetNode Node           //目标节点信息（数据包发送对象）
+	Infected   map[string]int //已被该数据包传染的节点列表，key为Addr:Port:Tag拼接的字符串，value为判定是否已传染的参数（1：是，0：否）
 }

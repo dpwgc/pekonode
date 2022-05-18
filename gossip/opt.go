@@ -29,23 +29,28 @@ func (nodeList *NodeList) Join() {
 	var mq = make(chan []byte, nodeList.Buffer)
 
 	//监听其他节点的信息，并放入mq队列
-	go listen(nodeList, mq)
+	go listener(nodeList, mq)
 
 	//消费mq队列中的信息
 	go consume(nodeList, mq)
 
-	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Join]:", nodeList.localNode)
+	nodeList.println("[Join]:", nodeList.localNode)
 }
 
 // Stop 停止广播心跳
 func (nodeList *NodeList) Stop() {
-	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Stop]:", nodeList.localNode)
+	nodeList.println("[Stop]:", nodeList.localNode)
 	nodeList.status[1] = false
 }
 
 // Start 重新开始广播心跳
 func (nodeList *NodeList) Start() {
-	nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Start]:", nodeList.localNode)
+	//如果当前心跳服务正常
+	if nodeList.status[1] {
+		//返回
+		return
+	}
+	nodeList.println("[Start]:", nodeList.localNode)
 	nodeList.status[1] = true
 	//定时广播本地节点信息
 	go task(nodeList)
