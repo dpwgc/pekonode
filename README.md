@@ -22,15 +22,17 @@ go get github.com/dpwgc/pekonode
 ***
 
 ### 使用方法
+#### 启动一个节点
 ```
 //启动一个节点
 func node() {
+
 	//配置该节点的本地节点列表nodeList参数
 	nodeList := gossip.NodeList{
 		Amount:     3,				//单次广播传染的最大节点数量
-		Cycle:      8,				//心跳数据包发送周期，每Cycle秒广播一次心跳
+		Cycle:      6,				//心跳数据包发送周期，每Cycle秒广播一次心跳
 		Buffer:     10,				//UDP监听缓冲区，节点数量较多时可适当增大
-		Timeout:    30,				//节点超时下线时间，当一个节点超过Timeout秒没发送心跳数据包，则在本地节点列表中删除该节点
+		Timeout:    20,				//节点超时下线时间，当一个节点超过Timeout秒没发送心跳数据包，则在本地节点列表中删除该节点
 		ListenAddr: "0.0.0.0",		//UDP监听地址，用于接收其他节点发来的心跳数据包，填"0.0.0.0"即可，内网环境则填"127.0.0.1"
 		ListenPort: 8000,			//UDP监听端口，与下面的本地节点端口相同即可
 		IsPrint:    true,
@@ -44,6 +46,7 @@ func node() {
 	})
 
 	//往本地节点列表中添加新的节点信息，可添加多个节点，本地节点将会与这些新节点同步信息
+	//如果启动的是集群中的第一个节点，可不进行Set添加操作
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 9999,
@@ -55,15 +58,15 @@ func node() {
 		Tag: "Hi",
 	})
 
-	//加入Gossip集群
+	//将该节点加入Gossip集群
 	nodeList.Join()
 }
 ```
 
 ***
 
-### 简单示例
-
+### 完整示例
+#### 启动ABC三个节点，构成一个Gossip集群
 ```
 package main
 
@@ -72,7 +75,7 @@ import (
 	"time"
 )
 
-//简单示例
+//完整示例
 func main()  {
 
 	//先启动节点A（初始节点）
@@ -81,15 +84,14 @@ func main()  {
 	//延迟3秒
 	time.Sleep(3*time.Second)
 
-	//同时启动节点B和节点C
+	//启动节点B
 	nodeB()
-	nodeC()
 
 	//延迟10秒
 	time.Sleep(10*time.Second)
 
-	//启动节点D
-	nodeD()
+	//启动节点C
+	nodeC()
 
 	for {
 		time.Sleep(10*time.Second)
@@ -101,20 +103,23 @@ func nodeA() {
 	//配置节点A的本地节点列表nodeList参数
 	nodeList := gossip.NodeList{
 		Amount:     3,				//单次广播传染的最大节点数量
-		Cycle:      8,				//心跳数据包发送周期，每Cycle秒广播一次心跳
+		Cycle:      6,				//心跳数据包发送周期，每Cycle秒广播一次心跳
 		Buffer:     10,				//UDP监听缓冲区，节点数量较多时可适当增大
-		Timeout:    30,				//节点超时下线时间，当一个节点超过Timeout秒没发送心跳数据包，则在本地节点列表中删除该节点
+		Timeout:    20,				//节点超时下线时间，当一个节点超过Timeout秒没发送心跳数据包，则在本地节点列表中删除该节点
 		ListenAddr: "0.0.0.0",		//UDP监听地址，用于接收其他节点发来的心跳数据包，填"0.0.0.0"即可，内网环境则填"127.0.0.1"
 		ListenPort: 8000,			//UDP监听端口，与下面的本地节点端口相同即可
-		IsPrint:    true,
+		IsPrint:    true,			//是否在控制台输出日志信息
 	}
 
 	//创建本地节点列表，传入本地节点信息
 	nodeList.New(gossip.Node{
 		Addr: "0.0.0.0",		//公网环境下请填写公网IP
 		Port: 8000,				//与上面本地节点列表UDP监听端口相同即可
+		Name: "A-server",		//节点名称，自定义填写
 		Tag: "A",				//节点标签，自定义填写，可以填一些节点基本信息
 	})
+	
+	//因为是第一个启动的节点，所以不需要用Set函数添加其他节点
 
 	//本地节点加入Gossip集群，本地节点列表与集群中的各个节点所存储的节点列表进行数据同步
 	nodeList.Join()
@@ -125,9 +130,9 @@ func nodeB() {
 	//配置节点B的本地节点列表nodeList参数
 	nodeList := gossip.NodeList{
 		Amount:     3,
-		Cycle:      8,
+		Cycle:      6,
 		Buffer:     10,
-		Timeout:    30,
+		Timeout:    20,
 		ListenAddr: "0.0.0.0",
 		ListenPort: 8001,
 		IsPrint:    true,
@@ -137,6 +142,7 @@ func nodeB() {
 	nodeList.New(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
+		Name: "B-server",
 		Tag: "B",
 	})
 
@@ -144,6 +150,7 @@ func nodeB() {
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8000,
+		Name: "A-server",
 		Tag: "A",			//将节点A的信息添加进节点B的本地节点列表
 	})
 
@@ -155,9 +162,9 @@ func nodeB() {
 func nodeC() {
 	nodeList := gossip.NodeList{
 		Amount:     3,
-		Cycle:      8,
+		Cycle:      6,
 		Buffer:     10,
-		Timeout:    30,
+		Timeout:    20,
 		ListenAddr: "0.0.0.0",
 		ListenPort: 8002,
 		IsPrint:    true,
@@ -166,6 +173,7 @@ func nodeC() {
 	nodeList.New(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8002,
+		Name: "C-server",
 		Tag: "C",
 	})
 
@@ -173,62 +181,38 @@ func nodeC() {
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8000,
+		Name: "A-server",
 		Tag: "A",			//将节点A的信息添加进节点C的本地节点列表
 	})
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
+		Name: "B-server",
 		Tag: "B",			//将节点B的信息添加进节点C的本地节点列表
 	})
 
 	//在加入集群后，节点C将会与上面的节点A及节点B进行数据同步
 	nodeList.Join()
-}
 
-//节点D
-func nodeD() {
-	nodeList := gossip.NodeList{
-		Amount:     3,
-		Cycle:      8,
-		Buffer:     10,
-		Timeout:    30,
-		ListenAddr: "0.0.0.0",
-		ListenPort: 8003,
-		IsPrint:    true,
-	}
+	//延迟30秒
+	time.Sleep(30*time.Second)
 
-	nodeList.New(gossip.Node{
-		Addr: "0.0.0.0",
-		Port: 8003,
-		Tag: "D",
-	})
-
-	nodeList.Set(gossip.Node{
-		Addr: "0.0.0.0",
-		Port: 8001,
-		Tag: "B",
-	})
-
-	nodeList.Join()
-
-	//延迟60秒
-	time.Sleep(60*time.Second)
-
-	//停止节点D的心跳广播服务（节点D暂时下线）
+	//停止节点C的心跳广播服务（节点C暂时下线）
 	nodeList.Stop()
 
-	//延迟60秒
-	time.Sleep(60*time.Second)
+	//延迟30秒
+	time.Sleep(30*time.Second)
 
-	//因为之前节点D下线，D的本地节点列表无法接收到各节点的心跳数据包，列表被清空
-	//所以要先往D的本地节点列表中添加一些集群节点，再调用Start()重启节点D的同步工作
+	//因为之前节点C下线，C的本地节点列表无法接收到各节点的心跳数据包，列表被清空
+	//所以要先往C的本地节点列表中添加一些集群节点，再调用Start()重启节点D的同步工作
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
+		Name: "B-server",
 		Tag: "B",		//这里添加节点B的信息
 	})
 
-	//重启节点D的心跳广播服务（节点D重新上线）
+	//重启节点C的心跳广播服务（节点C重新上线）
 	nodeList.Start()
 }
 ```
@@ -238,27 +222,28 @@ func nodeD() {
 ```
 // NodeList 节点列表
 type NodeList struct {
-	nodes   sync.Map 		//节点集合（key为Node结构体，value为节点最近更新的秒级时间戳）
-	Amount  int      		//每次给多少个节点发送同步信息
-	Cycle   int64    		//同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
-	Buffer  int      		//接收缓冲区大小
-	Timeout int64    		//单个节点的过期删除界限（多少秒后删除）
+	nodes   sync.Map 	//节点集合（key为Node结构体，value为节点最近更新的秒级时间戳）
+	Amount  int      	//每次给多少个节点发送同步信息
+	Cycle   int64    	//同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
+	Buffer  int      	//接收缓冲区大小
+	Timeout int64    	//单个节点的过期删除界限（多少秒后删除）
 
-	localNode Node 			//本地服务节点
+	localNode Node 		//本地节点信息
 
-	ListenAddr string 		//本地节点列表更新监听地址（这两一般与本地节点Node设置相同）
-	ListenPort int    		//本地节点列表更新监听端口
+	ListenAddr string 	//本地节点列表更新监听地址（这两一般与本地节点Node设置相同）
+	ListenPort int    	//本地节点列表更新监听端口
 
-	status map[int]bool 	//本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
+	status map[int]bool //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
 
-	IsPrint bool 			//是否打印列表同步信息到控制台
+	IsPrint bool 		//是否打印列表同步信息到控制台
 }
 
 // Node 节点
 type Node struct {
-	Addr string 		//节点IP地址（公网环境下填公网IP）
-	Port int    		//端口号
-	Tag  string 		//节点标签（可以写一些基本信息）
+	Addr string 	//节点IP地址（公网环境下填公网IP）
+	Port int    	//端口号
+	Name  string 	//节点名称（自定义）
+	Tag  string 	//节点标签（自定义，可以写一些基本信息）
 }
 ```
 

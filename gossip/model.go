@@ -10,7 +10,7 @@ type NodeList struct {
 	Buffer  int      //接收缓冲区大小
 	Timeout int64    //单个节点的过期删除界限（多少秒后删除）
 
-	localNode Node //本地服务节点
+	localNode Node //本地节点信息
 
 	ListenAddr string //本地节点列表更新监听地址（这两一般与本地节点Node设置相同）
 	ListenPort int    //本地节点列表更新监听端口
@@ -24,7 +24,8 @@ type NodeList struct {
 type Node struct {
 	Addr string //节点IP地址（公网环境下填公网IP）
 	Port int    //端口号
-	Tag  string //节点标签（可以写一些基本信息）
+	Name string //节点名称（自定义）
+	Tag  string //节点标签（自定义，可以写一些基本信息）
 }
 
 // 节点心跳数据包
