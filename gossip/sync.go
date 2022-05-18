@@ -17,7 +17,7 @@ func task(nodeList *NodeList) {
 
 		//将本地节点加入已传染的节点列表sentList
 		var infected = make(map[string]int)
-		infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)+":"+nodeList.localNode.Tag] = 1
+		infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = 1
 		//更新本地节点信息
 		nodeList.Set(nodeList.localNode)
 
@@ -80,14 +80,14 @@ func broadcast(nodeList *NodeList, sn sendNode) {
 		}
 
 		//如果该节点已经被传染过了
-		if sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)+":"+n.Tag] == 1 {
+		if sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)] == 1 {
 			//跳过该节点
 			continue
 		}
 
 		//将该节点添加进发送列表
-		sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)+":"+n.Tag] = 1 //标记该节点为已传染状态
-		sn.TargetNode = n                                          //设置发送目标节点
+		sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)] = 1 //标记该节点为已传染状态
+		sn.TargetNode = n                                //设置发送目标节点
 		sendNodes = append(sendNodes, sn)
 		i++
 	}
