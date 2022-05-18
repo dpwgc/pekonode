@@ -2,7 +2,6 @@ package gossip
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -48,7 +47,7 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		var sn sendNode
 		err := json.Unmarshal(bs, &sn)
 		if err != nil {
-			fmt.Println(err)
+			println("[error]:", err)
 		}
 
 		//从节点心跳数据包中取出节点信息
@@ -85,7 +84,7 @@ func broadcast(nodeList *NodeList, sn sendNode) {
 			continue
 		}
 
-		//将该节点添加进发送列表
+		//将该节点添加进广播列表
 		sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)] = 1 //标记该节点为已传染状态
 		sn.TargetNode = n                                //设置发送目标节点
 		sendNodes = append(sendNodes, sn)
