@@ -17,6 +17,8 @@ func task(nodeList *NodeList) {
 		//将本地节点加入已传染的节点列表sentList
 		var sentList = make(map[Node]int)
 		sentList[nodeList.localNode] = 1
+		//更新本地节点信息
+		nodeList.Set(nodeList.localNode)
 
 		//设置心跳数据包
 		sn := sendNode{
@@ -26,7 +28,7 @@ func task(nodeList *NodeList) {
 
 		//发送本地节点心跳数据包
 		broadcast(nodeList, sn)
-		nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Listen]:", nodeList.localNode, "/ [Node gossip]:", nodeList.Get())
+		nodeList.println(time.Now().Format("2006-01-02 15:04:05"), "/ [Listen]:", nodeList.localNode, "/ [Node list]:", nodeList.Get())
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
 	}
 }
@@ -91,7 +93,6 @@ func broadcast(nodeList *NodeList, sn sendNode) {
 	//向这些未被传染的节点广播传染数据
 	for _, n := range sendNodes {
 		bs, _ := json.Marshal(sn)
-		fmt.Println(n.TargetNode.Addr, n.TargetNode.Port, n.SentList)
 		Write(n.TargetNode.Addr, n.TargetNode.Port, bs)
 	}
 }
