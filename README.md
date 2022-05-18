@@ -123,9 +123,14 @@ func New(node Node, listenAddr string, listenPort int, amount int, cycle int64, 
 func (nodeList *NodeList) Join() 
 ```
 
-##### Stop 停止同步
+##### Stop 停止广播心跳
 ```
 func (nodeList *NodeList) Stop() 
+```
+
+##### Start 重新开始广播心跳
+```
+func (nodeList *NodeList) Start() {
 ```
 
 ##### Set 向本地节点列表中加入其他节点信息
