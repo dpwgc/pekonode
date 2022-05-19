@@ -2,26 +2,30 @@
 
 ## 一个基于Golang整合UDP实现的Gossip协议工具包
 
+![Go](https://img.shields.io/static/v1?label=LICENSE&message=Apache-2.0&color=orange)
+![Go](https://img.shields.io/static/v1?label=Go&message=v1.17&color=blue)
+[![github](https://img.shields.io/static/v1?label=Github&message=pekonode&color=blue)](https://github.com/dpwgc/pekonode)
+
 ***
 
 ### 实现原理
-![avatar](./img/gossip.jpg)
 * 每个节点都有一个本地节点列表NodeList。
 * 每个节点的后台同步协程定时将节点信息封装成心跳数据包，并广播给集群中部分未被传染的节点。
-* 其他节点接收到心跳数据包后，更新自己的本地节点列表NodeList，再将该心跳数据包广播给集群中的其他未被传染的节点。
-* 重复前一个广播步骤，直至所有节点都被传染，本次心跳广播停止。
+* 其他节点接收到心跳数据包后，更新自己的本地节点列表NodeList，再将该心跳数据包广播给集群中部分未被传染的节点。
+* 重复前一个广播步骤，直至所有节点都被传染，本次心跳传染结束。
 * 如果本地节点列表NodeList中，存在超时未发送心跳更新的节点，则删除该超时节点数据。
 
 ***
 
 ### 导入包
 ```
+//Goland终端输入
 go get github.com/dpwgc/pekonode
 ```
 
 ***
 
-### 使用方法
+### 简单使用示例
 #### 启动一个节点
 ```
 //启动一个节点
@@ -29,19 +33,14 @@ func node() {
 
 	//配置该节点的本地节点列表nodeList参数
 	nodeList := gossip.NodeList{
-		Amount:     3,				//单次广播传染的最大节点数量
-		Cycle:      6,				//心跳数据包发送周期，每Cycle秒广播一次心跳
-		Buffer:     10,				//UDP监听缓冲区，节点数量较多时可适当增大
-		Timeout:    20,				//节点超时下线时间，当一个节点超过Timeout秒没发送心跳数据包，则在本地节点列表中删除该节点
-		ListenAddr: "0.0.0.0",		//UDP监听地址，用于接收其他节点发来的心跳数据包，填"0.0.0.0"即可，内网环境则填"127.0.0.1"
-		ListenPort: 8000,			//UDP监听端口，与下面的本地节点端口相同即可
-		IsPrint:    true,
+		IsPrint:    true,           //是否在控制台输出日志信息，不填默认为false
 	}
 
 	//创建本地节点列表，传入本地节点信息
 	nodeList.New(gossip.Node{
-		Addr: "0.0.0.0",		//公网环境下请填写公网IP
-		Port: 8000,				//与上面本地节点列表UDP监听端口相同即可
+		Addr: "0.0.0.0",		//本地节点IP地址，公网环境下请填写公网IP
+		Port: 8000,				//本地节点端口号
+		Name: "Test",           //节点名称，自定义填写
 		Tag: "Test",			//节点标签，自定义填写，可以填一些节点基本信息
 	})
 
@@ -50,11 +49,13 @@ func node() {
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 9999,
+		Name: "Hello",
 		Tag: "Hello",
 	})
 	nodeList.Set(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 7777,
+		Name: "Hi",
 		Tag: "Hi",
 	})
 
@@ -65,7 +66,7 @@ func node() {
 
 ***
 
-### 完整示例
+### 完整使用示例
 #### 启动ABC三个节点，构成一个Gossip集群
 ```
 package main
@@ -75,7 +76,7 @@ import (
 	"time"
 )
 
-//完整示例
+//完整使用示例
 func main()  {
 
 	//先启动节点A（初始节点）
@@ -98,23 +99,17 @@ func main()  {
 	}
 }
 
-//节点A（初始节点）
+//运行节点A（初始节点）
 func nodeA() {
 	//配置节点A的本地节点列表nodeList参数
 	nodeList := gossip.NodeList{
-		Amount:     3,				//单次广播传染的最大节点数量
-		Cycle:      6,				//心跳数据包发送周期，每Cycle秒广播一次心跳
-		Buffer:     10,				//UDP监听缓冲区，节点数量较多时可适当增大
-		Timeout:    20,				//节点超时下线时间，当一个节点超过Timeout秒没发送心跳数据包，则在本地节点列表中删除该节点
-		ListenAddr: "0.0.0.0",		//UDP监听地址，用于接收其他节点发来的心跳数据包，填"0.0.0.0"即可，内网环境则填"127.0.0.1"
-		ListenPort: 8000,			//UDP监听端口，与下面的本地节点端口相同即可
 		IsPrint:    true,			//是否在控制台输出日志信息
 	}
 
-	//创建本地节点列表，传入本地节点信息
+	//创建节点A及其本地节点列表
 	nodeList.New(gossip.Node{
-		Addr: "0.0.0.0",		//公网环境下请填写公网IP
-		Port: 8000,				//与上面本地节点列表UDP监听端口相同即可
+		Addr: "0.0.0.0",		//本地节点IP地址，公网环境下请填写公网IP
+		Port: 8000,				//本地节点端口号
 		Name: "A-server",		//节点名称，自定义填写
 		Tag: "A",				//节点标签，自定义填写，可以填一些节点基本信息
 	})
@@ -125,20 +120,14 @@ func nodeA() {
 	nodeList.Join()
 }
 
-//节点B
+//运行节点B
 func nodeB() {
 	//配置节点B的本地节点列表nodeList参数
 	nodeList := gossip.NodeList{
-		Amount:     3,
-		Cycle:      6,
-		Buffer:     10,
-		Timeout:    20,
-		ListenAddr: "0.0.0.0",
-		ListenPort: 8001,
 		IsPrint:    true,
 	}
 
-	//创建本地节点列表，传入本地节点信息
+	//创建节点B及其本地节点列表
 	nodeList.New(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
@@ -158,18 +147,13 @@ func nodeB() {
 	nodeList.Join()
 }
 
-//节点C
+//运行节点C
 func nodeC() {
 	nodeList := gossip.NodeList{
-		Amount:     3,
-		Cycle:      6,
-		Buffer:     10,
-		Timeout:    20,
-		ListenAddr: "0.0.0.0",
-		ListenPort: 8002,
 		IsPrint:    true,
 	}
-
+	
+	//创建节点C及其本地节点列表
 	nodeList.New(gossip.Node{
 		Addr: "0.0.0.0",
 		Port: 8002,
@@ -223,19 +207,19 @@ func nodeC() {
 // NodeList 节点列表
 type NodeList struct {
 	nodes   sync.Map 	//节点集合（key为Node结构体，value为节点最近更新的秒级时间戳）
-	Amount  int      	//每次给多少个节点发送同步信息
-	Cycle   int64    	//同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
-	Buffer  int      	//接收缓冲区大小
-	Timeout int64    	//单个节点的过期删除界限（多少秒后删除）
+	Amount  int      	//每次广播最多给几个节点发送同步信息，默认为3
+	Cycle   int64    	//同步时间周期，默认为6（每隔多少秒向其他节点发送一次列表同步信息）
+	Buffer  int         //UDP接收缓冲区大小（决定UDP监听服务可以异步处理多少个请求），默认为Amount的三倍
+	Size  int      	    //单个UDP心跳数据包的最大容量（单位：字节），默认1024，节点数量较多或者节点Tag和Name中存储的信息较大时，可适当调大
+	Timeout int64    	//单个节点的过期删除界限（多少秒后删除节点），必定大于Cycle，默认为Cycle的三倍加两秒
 
 	localNode Node 		//本地节点信息
 
-	ListenAddr string 	//本地节点列表更新监听地址（这两一般与本地节点Node设置相同）
-	ListenPort int    	//本地节点列表更新监听端口
+	ListenAddr string 	//本地UDP监听地址，默认为0.0.0.0，用这个监听地址接收其他节点发来的心跳包（一般不用设置，默认即可）
 
 	status map[int]bool //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
 
-	IsPrint bool 		//是否打印列表同步信息到控制台
+	IsPrint bool 		//是否打印列表同步信息到控制台，默认为false
 }
 
 // Node 节点
@@ -243,7 +227,7 @@ type Node struct {
 	Addr string 	//节点IP地址（公网环境下填公网IP）
 	Port int    	//端口号
 	Name  string 	//节点名称（自定义）
-	Tag  string 	//节点标签（自定义，可以写一些基本信息）
+	Tag  string 	//节点标签（自定义，可以写一些配置信息或者是接口地址）
 }
 ```
 
@@ -251,7 +235,7 @@ type Node struct {
 
 ### 函数说明
 * nodeList 本地节点列表
-##### New 创建本地节点列表
+##### New 初始化本地节点列表
 ```
 func (nodeList *NodeList) New(localNode Node) 
 ```

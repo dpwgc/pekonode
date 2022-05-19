@@ -28,7 +28,7 @@ func task(nodeList *NodeList) {
 
 		//发送本地节点心跳数据包
 		broadcast(nodeList, sn)
-		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.ListenPort), "/ [Node list]:", nodeList.Get())
+		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get())
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
 	}
 }
@@ -36,7 +36,7 @@ func task(nodeList *NodeList) {
 //监听其他节点发来的同步信息
 func listener(nodeList *NodeList, mq chan []byte) {
 	//监听协程
-	listen(nodeList.ListenAddr, nodeList.ListenPort, mq)
+	listen(nodeList.ListenAddr, nodeList.localNode.Port, nodeList.Size, mq)
 }
 
 //消费信息
@@ -46,8 +46,11 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		bs := <-mq
 		var sn sendNode
 		err := json.Unmarshal(bs, &sn)
+		//如果数据解析错误
 		if err != nil {
 			println("[error]:", err)
+			//跳过
+			continue
 		}
 
 		//从节点心跳数据包中取出节点信息
@@ -70,7 +73,7 @@ func broadcast(nodeList *NodeList, sn sendNode) {
 
 	//选取部分未被传染的节点
 	i := 0
-	for _, n := range nodes {
+	for _, v := range nodes {
 
 		//如果超过Amount最大推送数量
 		if i >= nodeList.Amount {
@@ -79,24 +82,26 @@ func broadcast(nodeList *NodeList, sn sendNode) {
 		}
 
 		//如果该节点已经被传染过了
-		if sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)] == 1 {
+		if sn.Infected[v.Addr+":"+strconv.Itoa(v.Port)] == 1 {
 			//跳过该节点
 			continue
 		}
 
+		sn.Infected[v.Addr+":"+strconv.Itoa(v.Port)] = 1 //标记该节点为已传染状态
+		sn.TargetAddr = v.Addr                           //设置发送目标地址
+		sn.TargetPort = v.Port                           //设置发送目标端口
+
 		//将该节点添加进广播列表
-		sn.Infected[n.Addr+":"+strconv.Itoa(n.Port)] = 1 //标记该节点为已传染状态
-		sn.TargetNode = n                                //设置发送目标节点
 		sendNodes = append(sendNodes, sn)
 		i++
 	}
 
 	//向这些未被传染的节点广播传染数据
-	for _, n := range sendNodes {
+	for _, v := range sendNodes {
 		bs, err := json.Marshal(sn)
 		if err != nil {
 			println("[error]:", err)
 		}
-		write(n.TargetNode.Addr, n.TargetNode.Port, bs)
+		write(v.TargetAddr, v.TargetPort, bs)
 	}
 }

@@ -28,7 +28,7 @@ func write(addr string, port int, data []byte) {
 }
 
 // listen udp服务端监听
-func listen(addr string, port int, mq chan []byte) {
+func listen(addr string, port int, size int, mq chan []byte) {
 
 	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
 	if err != nil {
@@ -48,8 +48,17 @@ func listen(addr string, port int, mq chan []byte) {
 	}(conn)
 
 	for {
-		bs := make([]byte, 8192)
+		//接收数组
+		bs := make([]byte, size)
+
+		//从UDP监听中接收数据
 		_, _, err = conn.ReadFromUDP(bs)
+		if err != nil {
+			println("[Error]:", err)
+			continue
+		}
+
+		//获取有效数据
 		var b []byte
 		for _, v := range bs {
 			if v == 0x0 {
@@ -58,11 +67,7 @@ func listen(addr string, port int, mq chan []byte) {
 			b = append(b, v)
 		}
 
+		//将数据放入缓冲队列，异步处理数据
 		mq <- b
-
-		if err != nil {
-			println("[Error]:", err)
-			continue
-		}
 	}
 }
