@@ -155,6 +155,8 @@ func (nodeList *NodeList) Publish(metadata string) {
 		return
 	}
 
+	nodeList.println("[Publish]:", nodeList.localNode, "/ [Metadata]:", metadata)
+
 	//将本地节点加入已传染的节点列表infected
 	var infected = make(map[string]int)
 	infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = 1
@@ -170,8 +172,8 @@ func (nodeList *NodeList) Publish(metadata string) {
 		Infected: infected,
 
 		//将数据包设为元数据更新数据包
-		metadata: metadata,
-		isUpdate: true,
+		Metadata: metadata,
+		IsUpdate: true,
 	}
 
 	//在集群中广播数据包

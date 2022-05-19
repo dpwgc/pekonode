@@ -30,7 +30,7 @@ func task(nodeList *NodeList) {
 		//发送本地节点心跳数据包
 		broadcast(nodeList, p)
 
-		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get())
+		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get(), "/ [Metadata]:", nodeList.Read())
 
 		//间隔时间
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
@@ -64,9 +64,9 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		nodeList.Set(node)
 
 		//如果该数据包是元数据更新数据包
-		if p.isUpdate {
+		if p.IsUpdate {
 			//更新本地节点中存储的元数据信息
-			nodeList.metadata = p.metadata
+			nodeList.metadata = p.Metadata
 		}
 
 		//广播推送该节点信息

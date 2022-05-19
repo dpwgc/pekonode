@@ -40,6 +40,6 @@ type packet struct {
 	Infected   map[string]int //已被该数据包传染的节点列表，key为Addr:Port拼接的字符串，value为判定该节点是否已被传染的参数（1：是，0：否）
 
 	//元数据信息
-	metadata string //新的元数据信息，如果该数据包是元数据更新数据包（isUpdate=true），则用newData覆盖掉原先的集群元数据metadata
-	isUpdate bool   //判定该数据包是否为元数据更新数据包（true：是，false：否）
+	Metadata string //新的元数据信息，如果该数据包是元数据更新数据包（isUpdate=true），则用newData覆盖掉原先的集群元数据metadata
+	IsUpdate bool   //判定该数据包是否为元数据更新数据包（true：是，false：否）
 }
