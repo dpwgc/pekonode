@@ -14,21 +14,25 @@ func task(nodeList *NodeList) {
 			break
 		}
 
-		//将本地节点加入已传染的节点列表sentList
+		//将本地节点加入已传染的节点列表infected
 		var infected = make(map[string]int)
 		infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = 1
+
 		//更新本地节点信息
 		nodeList.Set(nodeList.localNode)
 
 		//设置心跳数据包
-		sn := sendNode{
+		p := packet{
 			Node:     nodeList.localNode,
 			Infected: infected,
 		}
 
 		//发送本地节点心跳数据包
-		broadcast(nodeList, sn)
+		broadcast(nodeList, p)
+
 		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get())
+
+		//间隔时间
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
 	}
 }
@@ -44,8 +48,8 @@ func consume(nodeList *NodeList, mq chan []byte) {
 	for {
 		//从监听队列中取出消息
 		bs := <-mq
-		var sn sendNode
-		err := json.Unmarshal(bs, &sn)
+		var p packet
+		err := json.Unmarshal(bs, &p)
 		//如果数据解析错误
 		if err != nil {
 			println("[error]:", err)
@@ -54,22 +58,28 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		}
 
 		//从节点心跳数据包中取出节点信息
-		node := sn.Node
+		node := p.Node
 
 		//更新本地列表
 		nodeList.Set(node)
 
+		//如果该数据包是元数据更新数据包
+		if p.isUpdate {
+			//更新本地节点中存储的元数据信息
+			nodeList.metadata = p.metadata
+		}
+
 		//广播推送该节点信息
-		broadcast(nodeList, sn)
+		broadcast(nodeList, p)
 	}
 }
 
 //广播推送信息
-func broadcast(nodeList *NodeList, sn sendNode) {
+func broadcast(nodeList *NodeList, p packet) {
 
 	//取出所有未过期的节点
 	nodes := nodeList.Get()
-	var sendNodes []sendNode
+	var packets []packet
 
 	//选取部分未被传染的节点
 	i := 0
@@ -82,23 +92,23 @@ func broadcast(nodeList *NodeList, sn sendNode) {
 		}
 
 		//如果该节点已经被传染过了
-		if sn.Infected[v.Addr+":"+strconv.Itoa(v.Port)] == 1 {
+		if p.Infected[v.Addr+":"+strconv.Itoa(v.Port)] == 1 {
 			//跳过该节点
 			continue
 		}
 
-		sn.Infected[v.Addr+":"+strconv.Itoa(v.Port)] = 1 //标记该节点为已传染状态
-		sn.TargetAddr = v.Addr                           //设置发送目标地址
-		sn.TargetPort = v.Port                           //设置发送目标端口
+		p.Infected[v.Addr+":"+strconv.Itoa(v.Port)] = 1 //标记该节点为已传染状态
+		p.TargetAddr = v.Addr                           //设置发送目标地址
+		p.TargetPort = v.Port                           //设置发送目标端口
 
 		//将该节点添加进广播列表
-		sendNodes = append(sendNodes, sn)
+		packets = append(packets, p)
 		i++
 	}
 
 	//向这些未被传染的节点广播传染数据
-	for _, v := range sendNodes {
-		bs, err := json.Marshal(sn)
+	for _, v := range packets {
+		bs, err := json.Marshal(p)
 		if err != nil {
 			println("[error]:", err)
 		}
