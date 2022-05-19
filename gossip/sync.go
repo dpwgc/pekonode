@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//定时同步任务
+//定时心跳广播任务
 func task(nodeList *NodeList) {
 	for {
 		//停止同步
@@ -27,7 +27,7 @@ func task(nodeList *NodeList) {
 			Infected: infected,
 		}
 
-		//发送本地节点心跳数据包
+		//广播心跳数据包
 		broadcast(nodeList, p)
 
 		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get(), "/ [Metadata]:", nodeList.Read())

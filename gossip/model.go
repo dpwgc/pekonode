@@ -33,7 +33,7 @@ type Node struct {
 	Tag  string //节点标签（自定义，可以写一些基本信息）
 }
 
-// 心跳数据包
+// 数据包
 type packet struct {
 
 	//节点信息

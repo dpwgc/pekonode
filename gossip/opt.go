@@ -28,9 +28,9 @@ func (nodeList *NodeList) New(localNode Node) {
 		nodeList.Buffer = nodeList.Amount * 3
 	}
 
-	//Size 缺省值：1024
+	//Size 缺省值：16384
 	if nodeList.Size == 0 {
-		nodeList.Size = 1024
+		nodeList.Size = 16384
 	}
 
 	//Timeout 缺省值：如果当前Timeout小于或等于Cycle，则自动扩大Timeout的值
