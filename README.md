@@ -7,6 +7,10 @@
 [![github](https://img.shields.io/static/v1?label=Github&message=pekonode&color=blue)](https://github.com/dpwgc/pekonode)
 
 ***
+### 实现功能
+* 通过Gossip协议同步集群节点列表（每个节点都存储着完整的节点列表）
+* 通过Gossip协议更新集群元数据信息（集群公共数据，可存放公共配置信息）
+***
 
 ### 实现原理
 * 每个节点都有一个本地节点列表NodeList。
@@ -226,6 +230,8 @@ type NodeList struct {
 	status map[int]bool //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
 
 	IsPrint bool 		//是否打印列表同步信息到控制台，默认为false
+	
+	metadata string     //元数据，集群中各个节点的元数据内容一致，相当于集群的公共数据（可存储一些公共配置信息），可以通过广播更新各个节点的元数据内容
 }
 
 // Node 节点
@@ -271,4 +277,14 @@ func (nodeList *NodeList) Set(node Node)
 ##### Get 获取本地节点列表
 ```
 func (nodeList *NodeList) Get() []Node 
+```
+
+##### Publish 在集群中发布新的元数据信息
+```
+func (nodeList *NodeList) Publish(metadata string) 
+```
+
+##### Read 读取本地节点列表的元数据信息
+```
+func (nodeList *NodeList) Read() string 
 ```
