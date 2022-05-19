@@ -1,4 +1,4 @@
-# PekoNode
+# PekoNode 集群信息同步工具
 
 ## 一个基于Golang整合UDP实现的Gossip协议工具包
 
