@@ -164,7 +164,7 @@ func (nodeList *NodeList) Publish(metadata string) {
 	//更新本地节点信息
 	nodeList.Set(nodeList.localNode)
 	//更新本地节点的元数据信息
-	nodeList.metadata = metadata
+	nodeList.metadata.Store(metadata)
 
 	//设置心跳数据包
 	p := packet{
@@ -189,5 +189,5 @@ func (nodeList *NodeList) Read() string {
 		return ""
 	}
 
-	return nodeList.metadata
+	return nodeList.metadata.Load().(string)
 }

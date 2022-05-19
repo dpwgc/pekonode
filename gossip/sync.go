@@ -66,7 +66,7 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		//如果该数据包是元数据更新数据包
 		if p.IsUpdate {
 			//更新本地节点中存储的元数据信息
-			nodeList.metadata = p.Metadata
+			nodeList.metadata.Store(p.Metadata)
 		}
 
 		//广播推送该节点信息

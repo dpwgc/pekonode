@@ -1,6 +1,9 @@
 package gossip
 
-import "sync"
+import (
+	"sync"
+	"sync/atomic"
+)
 
 // NodeList 节点列表
 type NodeList struct {
@@ -19,7 +22,7 @@ type NodeList struct {
 
 	IsPrint bool //是否打印列表同步信息到控制台
 
-	metadata string //元数据，集群中各个节点的元数据内容一致，相当于集群的公共数据（可存储一些公共配置信息），可以通过广播更新各个节点的元数据内容
+	metadata atomic.Value //元数据，集群中各个节点的元数据内容一致，相当于集群的公共数据（可存储一些公共配置信息），可以通过广播更新各个节点的元数据内容
 }
 
 // Node 节点
