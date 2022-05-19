@@ -38,9 +38,11 @@ func (nodeList *NodeList) New(localNode Node) {
 		nodeList.Timeout = nodeList.Cycle*3 + 2
 	}
 
-	nodeList.nodes.Store(localNode, time.Now().Unix()) //本地节点集合
-	nodeList.localNode = localNode                     //本地节点信息
-	nodeList.status.Store(true)                        //节点服务状态
+	//初始化本地节点列表的基础数据
+	nodeList.nodes.Store(localNode, time.Now().Unix()) //将本地节点信息添加进节点集合
+	nodeList.localNode = localNode                     //初始化本地节点信息
+	nodeList.status.Store(true)                        //初始化节点服务状态
+	nodeList.metadata.Store("")                        //初始化元数据信息
 }
 
 // Join 加入集群
