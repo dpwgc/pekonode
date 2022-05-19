@@ -59,8 +59,14 @@ func node() {
 		Tag: "Hi",
 	})
 
-	//将该节点加入Gossip集群
+	//将该节点加入Gossip集群（在后台启动心跳广播与监听协程）
 	nodeList.Join()
+	
+	//因为心跳广播这些工作都是在后台协程进行的，所以在调用Join函数后不能让主协程关闭，否则程序将直接退出
+	//无限循环
+	for {
+		time.Sleep(10*time.Second)
+	}
 }
 ```
 
