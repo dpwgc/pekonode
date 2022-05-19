@@ -18,7 +18,7 @@ type NodeList struct {
 
 	ListenAddr string //本地UDP监听地址，用这个监听地址接收其他节点发来的心跳包（一般填0.0.0.0即可）
 
-	status map[int]bool //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
+	status atomic.Value //本地节点列表更新状态（true：正常运行，false：停止发布心跳）
 
 	IsPrint bool //是否打印列表同步信息到控制台
 

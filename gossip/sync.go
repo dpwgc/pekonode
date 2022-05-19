@@ -10,7 +10,7 @@ import (
 func task(nodeList *NodeList) {
 	for {
 		//停止同步
-		if !nodeList.status[1] {
+		if !nodeList.status.Load().(bool) {
 			break
 		}
 

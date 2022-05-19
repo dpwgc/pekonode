@@ -2,7 +2,6 @@ package gossip
 
 import (
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -39,26 +38,17 @@ func (nodeList *NodeList) New(localNode Node) {
 		nodeList.Timeout = nodeList.Cycle*3 + 2
 	}
 
-	//节点集合
-	var nodes sync.Map
-
-	//将本地节点添加进本地节点集合
-	nodes.Store(localNode, time.Now().Unix())
-
-	//初始化节点服务状态
-	var status = make(map[int]bool, 1)
-	status[1] = true
-
-	nodeList.nodes = nodes         //本地节点集合
-	nodeList.localNode = localNode //本地节点信息
-	nodeList.status = status       //节点服务状态
+	nodeList.nodes.Store(localNode, time.Now().Unix()) //本地节点集合
+	nodeList.localNode = localNode                     //本地节点信息
+	nodeList.status.Store(true)                        //节点服务状态
 }
 
 // Join 加入集群
 func (nodeList *NodeList) Join() {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -82,31 +72,33 @@ func (nodeList *NodeList) Join() {
 func (nodeList *NodeList) Stop() {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
 
 	nodeList.println("[Stop]:", nodeList.localNode)
-	nodeList.status[1] = false
+	nodeList.status.Store(false)
 }
 
 // Start 重新开始广播心跳
 func (nodeList *NodeList) Start() {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
 
 	//如果当前心跳服务正常
-	if nodeList.status[1] {
+	if nodeList.status.Load().(bool) {
 		//返回
 		return
 	}
 	nodeList.println("[Start]:", nodeList.localNode)
-	nodeList.status[1] = true
+	nodeList.status.Store(true)
 	//定时广播本地节点信息
 	go task(nodeList)
 }
@@ -115,7 +107,8 @@ func (nodeList *NodeList) Start() {
 func (nodeList *NodeList) Set(node Node) {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -127,7 +120,8 @@ func (nodeList *NodeList) Set(node Node) {
 func (nodeList *NodeList) Get() []Node {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return nil
 	}
@@ -150,7 +144,8 @@ func (nodeList *NodeList) Get() []Node {
 func (nodeList *NodeList) Publish(metadata string) {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -184,7 +179,8 @@ func (nodeList *NodeList) Publish(metadata string) {
 func (nodeList *NodeList) Read() string {
 
 	//如果该节点的本地节点列表还未初始化
-	if nodeList.status == nil {
+	if len(nodeList.localNode.Addr) == 0 {
+		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return ""
 	}
