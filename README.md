@@ -235,7 +235,7 @@ type NodeList struct {
 	Timeout int64           //单个节点的过期删除界限（多少秒后删除）
 	localNode Node          //本地节点信息
 	ListenAddr string       //本地UDP监听地址，用这个监听地址接收其他节点发来的心跳包（一般填0.0.0.0即可）
-	status map[int]bool     //本地节点列表更新状态（map[1] = true：正常运行，map[1] = false：停止同步更新）
+	status atomic.Value     //本地节点列表更新状态（true：正常运行，false：停止发布心跳）
 	IsPrint bool            //是否打印列表同步信息到控制台
 	metadata atomic.Value   //元数据，集群中各个节点的元数据内容一致，相当于集群的公共数据（可存储一些公共配置信息），可以通过广播更新各个节点的元数据内容
 }
