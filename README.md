@@ -66,6 +66,17 @@ func node() {
 	//将该节点加入Gossip集群（在后台启动心跳广播与监听协程）
 	nodeList.Join()
 	
+	//获取本地节点列表
+	list := nodeList.Get()
+	fmt.Println(list)       //打印节点列表
+	
+	//在集群中发布新的元数据信息
+	nodeList.Publish("test metadata")
+	
+	//读取本地元数据信息
+	metadata := nodeList.Read()
+	fmt.Println(metadata)   //打印元数据信息
+	
 	//因为心跳广播这些工作都是在后台协程进行的，所以在调用Join函数后不能让主协程关闭，否则程序将直接退出
 	//无限循环
 	for {
@@ -288,3 +299,32 @@ func (nodeList *NodeList) Publish(metadata string)
 ```
 func (nodeList *NodeList) Read() string 
 ```
+
+*** 
+
+### 控制台打印信息
+#### 当NodeList的IsPrint参数被设为true时，程序会在控制台打印出运行信息
+##### 当节点加入集群时，打印：
+```
+2022-05-19 14:51:23 [[Join]: {0.0.0.0 8000 A-server A}]
+```
+* 表示节点0.0.0.0:8000加入集群
+
+##### 当节点发布心跳时，打印：
+```
+2022-05-19 14:52:23 [[Listen]: 0.0.0.0:8000 / [Node list]: [{0.0.0.0 8000 A-server A} {0.0.0.0 8001 B-server B}] / [Metadata]: test metadata]
+```
+* Listen表示本地UDP监听服务地址与端口，Node list表示当前本地节点列表，Metadata表示当前本地元数据信息
+
+##### 当暂停节点运行时，打印：
+```
+2022-05-19 14:52:06 [[Stop]: {0.0.0.0 8002 C-server C}]
+```
+* 表示节点0.0.0.0:8002停止广播心跳数据包
+
+##### 当重新开始节点运行时，打印：
+```
+2022-05-19 14:52:36 [[Start]: {0.0.0.0 8002 C-server C}]
+```
+* 表示节点0.0.0.0:8002重新开始广播心跳数据包
+
