@@ -42,7 +42,13 @@ func (nodeList *NodeList) New(localNode Node) {
 	nodeList.nodes.Store(localNode, time.Now().Unix()) //将本地节点信息添加进节点集合
 	nodeList.localNode = localNode                     //初始化本地节点信息
 	nodeList.status.Store(true)                        //初始化节点服务状态
-	nodeList.metadata.Store("")                        //初始化元数据信息
+
+	//设置元数据信息
+	md := metadata{
+		Data:   "",                //元数据内容
+		Update: time.Now().Unix(), //元数据更新时间戳
+	}
+	nodeList.metadata.Store(md) //初始化元数据信息
 }
 
 // Join 加入集群
