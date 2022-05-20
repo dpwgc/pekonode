@@ -53,23 +53,12 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		bs := <-mq
 		var p packet
 		err := json.Unmarshal(bs, &p)
+
 		//如果数据解析错误
 		if err != nil {
 			println("[error]:", err)
 			//跳过
 			continue
-		}
-
-		//从节点心跳数据包中取出节点信息
-		node := p.Node
-
-		//更新本地列表
-		nodeList.Set(node)
-
-		//如果该数据包是元数据更新数据包，且数据包中的元数据版本要比本地存储的元数据版本新
-		if p.IsUpdate && p.Metadata.Update > nodeList.metadata.Load().(metadata).Update {
-			//更新本地节点中存储的元数据信息
-			nodeList.metadata.Store(p.Metadata)
 		}
 
 		//如果该数据包是两节点间的元数据交换数据包
@@ -86,6 +75,18 @@ func consume(nodeList *NodeList, mq chan []byte) {
 			}
 			//跳过，不广播
 			continue
+		}
+
+		//从节点心跳数据包中取出节点信息
+		node := p.Node
+
+		//更新本地列表
+		nodeList.Set(node)
+
+		//如果该数据包是元数据更新数据包，且数据包中的元数据版本要比本地存储的元数据版本新
+		if p.IsUpdate && p.Metadata.Update > nodeList.metadata.Load().(metadata).Update {
+			//更新本地节点中存储的元数据信息
+			nodeList.metadata.Store(p.Metadata)
 		}
 
 		//广播推送该节点信息
