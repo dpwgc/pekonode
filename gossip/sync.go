@@ -165,8 +165,10 @@ func swapRequest(nodeList *NodeList) {
 		if nodes[i].Addr == nodeList.localNode.Addr && nodes[i].Port == nodeList.localNode.Port {
 			continue
 		}
+		//发送请求
 		write(nodes[i].Addr, nodes[i].Port, bs)
 		nodeList.println("[Swap Request]:", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port), "->", nodes[i].Addr+":"+strconv.Itoa(nodes[i].Port))
+		break
 	}
 }
 
