@@ -200,5 +200,5 @@ func (nodeList *NodeList) Read() string {
 		return ""
 	}
 
-	return nodeList.metadata.Load().(string)
+	return nodeList.metadata.Load().(metadata).Data
 }

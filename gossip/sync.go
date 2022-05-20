@@ -84,6 +84,8 @@ func consume(nodeList *NodeList, mq chan []byte) {
 				//回应发送方，完成交换流程
 				swapResponse(nodeList, p.Node)
 			}
+			//跳过，不广播
+			continue
 		}
 
 		//广播推送该节点信息
@@ -140,6 +142,7 @@ func swapRequest(nodeList *NodeList) {
 	p := packet{
 		//将本地节点信息存入数据包，接收方根据这个信息回复请求
 		Node:     nodeList.localNode,
+		Infected: make(map[string]int),
 		IsSwap:   1,
 		Metadata: nodeList.metadata.Load().(metadata),
 	}
@@ -152,8 +155,15 @@ func swapRequest(nodeList *NodeList) {
 		println("[error]:", err)
 	}
 
-	//在集群中随机选取一个节点，发起数据交换请求
-	write(nodes[0].Addr, nodes[0].Port, bs)
+	//在节点列表中随机选取一个节点，发起数据交换请求
+	for i := 0; i < len(nodes); i++ {
+		//如果遍历到自己，则跳过
+		if nodes[i].Addr == nodeList.localNode.Addr && nodes[i].Port == nodeList.localNode.Port {
+			continue
+		}
+		write(nodes[i].Addr, nodes[i].Port, bs)
+		nodeList.println("[Swap Request]:", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port), "->", nodes[i].Addr+":"+strconv.Itoa(nodes[i].Port))
+	}
 }
 
 //接收数据交换请求并回应发送方，完成交换工作
@@ -162,6 +172,7 @@ func swapResponse(nodeList *NodeList, node Node) {
 	//设置为数据交换数据包
 	p := packet{
 		Node:     nodeList.localNode,
+		Infected: make(map[string]int),
 		IsSwap:   2,
 		Metadata: nodeList.metadata.Load().(metadata),
 	}
@@ -173,4 +184,6 @@ func swapResponse(nodeList *NodeList, node Node) {
 
 	//回应发起节点
 	write(node.Addr, node.Port, bs)
+
+	nodeList.println("[Swap Response]:", node.Addr+":"+strconv.Itoa(node.Port), "<-", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port))
 }
