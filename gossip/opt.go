@@ -143,7 +143,7 @@ func (nodeList *NodeList) Get() []Node {
 }
 
 // Publish 在集群中发布新的元数据信息
-func (nodeList *NodeList) Publish(metadata string) {
+func (nodeList *NodeList) Publish(newMetadata string) {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
@@ -152,7 +152,7 @@ func (nodeList *NodeList) Publish(metadata string) {
 		return
 	}
 
-	nodeList.println("[Publish]:", nodeList.localNode, "/ [Metadata]:", metadata)
+	nodeList.println("[Publish]:", nodeList.localNode, "/ [Metadata]:", newMetadata)
 
 	//将本地节点加入已传染的节点列表infected
 	var infected = make(map[string]int)
@@ -160,8 +160,15 @@ func (nodeList *NodeList) Publish(metadata string) {
 
 	//更新本地节点信息
 	nodeList.Set(nodeList.localNode)
+
+	//设置新的元数据信息
+	md := metadata{
+		Data:   newMetadata,       //元数据内容
+		Update: time.Now().Unix(), //元数据更新时间戳
+	}
+
 	//更新本地节点的元数据信息
-	nodeList.metadata.Store(metadata)
+	nodeList.metadata.Store(md)
 
 	//设置心跳数据包
 	p := packet{
@@ -169,7 +176,7 @@ func (nodeList *NodeList) Publish(metadata string) {
 		Infected: infected,
 
 		//将数据包设为元数据更新数据包
-		Metadata: metadata,
+		Metadata: md,
 		IsUpdate: true,
 	}
 

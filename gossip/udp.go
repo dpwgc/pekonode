@@ -52,20 +52,14 @@ func listen(addr string, port int, size int, mq chan []byte) {
 		bs := make([]byte, size)
 
 		//从UDP监听中接收数据
-		_, _, err = conn.ReadFromUDP(bs)
+		n, _, err := conn.ReadFromUDP(bs)
 		if err != nil {
 			println("[Error]:", err)
 			continue
 		}
 
 		//获取有效数据
-		var b []byte
-		for _, v := range bs {
-			if v == 0x0 {
-				break
-			}
-			b = append(b, v)
-		}
+		b := bs[:n]
 
 		//将数据放入缓冲队列，异步处理数据
 		mq <- b

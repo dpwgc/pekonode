@@ -30,6 +30,9 @@ func task(nodeList *NodeList) {
 		//广播心跳数据包
 		broadcast(nodeList, p)
 
+		//向集群中的某个节点发起数据交换请求
+		swapRequest(nodeList)
+
 		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get(), "/ [Metadata]:", nodeList.Read())
 
 		//间隔时间
@@ -63,10 +66,24 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		//更新本地列表
 		nodeList.Set(node)
 
-		//如果该数据包是元数据更新数据包
-		if p.IsUpdate {
+		//如果该数据包是元数据更新数据包，且数据包中的元数据版本要比本地存储的元数据版本新
+		if p.IsUpdate && p.Metadata.Update > nodeList.metadata.Load().(metadata).Update {
 			//更新本地节点中存储的元数据信息
 			nodeList.metadata.Store(p.Metadata)
+		}
+
+		//如果该数据包是两节点间的元数据交换数据包
+		if p.IsSwap != 0 {
+			//如果数据包中的元数据版本要比本地存储的元数据版本新
+			if p.Metadata.Update > nodeList.metadata.Load().(metadata).Update {
+				//更新本地节点中存储的元数据信息
+				nodeList.metadata.Store(p.Metadata)
+			}
+			//如果是接收方接收到发起方的数据交换请求
+			if p.IsSwap == 1 {
+				//回应发送方，完成交换流程
+				swapResponse(nodeList, p.Node)
+			}
 		}
 
 		//广播推送该节点信息
@@ -114,4 +131,46 @@ func broadcast(nodeList *NodeList, p packet) {
 		}
 		write(v.TargetAddr, v.TargetPort, bs)
 	}
+}
+
+//发起两节点数据交换请求
+func swapRequest(nodeList *NodeList) {
+
+	//设置为数据交换数据包
+	p := packet{
+		//将本地节点信息存入数据包，接收方根据这个信息回复请求
+		Node:     nodeList.localNode,
+		IsSwap:   1,
+		Metadata: nodeList.metadata.Load().(metadata),
+	}
+
+	//取出所有未过期的节点
+	nodes := nodeList.Get()
+
+	bs, err := json.Marshal(p)
+	if err != nil {
+		println("[error]:", err)
+	}
+
+	//在集群中随机选取一个节点，发起数据交换请求
+	write(nodes[0].Addr, nodes[0].Port, bs)
+}
+
+//接收数据交换请求并回应发送方，完成交换工作
+func swapResponse(nodeList *NodeList, node Node) {
+
+	//设置为数据交换数据包
+	p := packet{
+		Node:     nodeList.localNode,
+		IsSwap:   2,
+		Metadata: nodeList.metadata.Load().(metadata),
+	}
+
+	bs, err := json.Marshal(p)
+	if err != nil {
+		println("[error]:", err)
+	}
+
+	//回应发起节点
+	write(node.Addr, node.Port, bs)
 }
