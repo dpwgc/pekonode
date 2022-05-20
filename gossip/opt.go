@@ -45,8 +45,8 @@ func (nodeList *NodeList) New(localNode Node) {
 
 	//设置元数据信息
 	md := metadata{
-		Data:   "",                //元数据内容
-		Update: time.Now().Unix(), //元数据更新时间戳
+		Data:   "", //元数据内容
+		Update: 0,  //元数据更新时间戳
 	}
 	nodeList.metadata.Store(md) //初始化元数据信息
 }

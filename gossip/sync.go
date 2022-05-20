@@ -68,10 +68,13 @@ func consume(nodeList *NodeList, mq chan []byte) {
 				//更新本地节点中存储的元数据信息
 				nodeList.metadata.Store(p.Metadata)
 			}
-			//如果是接收方接收到发起方的数据交换请求
-			if p.IsSwap == 1 {
-				//回应发送方，完成交换流程
-				swapResponse(nodeList, p.Node)
+			//如果数据包中的元数据版本要比本地存储的元数据版本旧
+			if p.Metadata.Update < nodeList.metadata.Load().(metadata).Update {
+				//如果是接收方接收到发起方的数据交换请求
+				if p.IsSwap == 1 {
+					//回应发送方，向接收方发送最新的元数据信息，完成交换流程
+					swapResponse(nodeList, p.Node)
+				}
 			}
 			//跳过，不广播
 			continue
