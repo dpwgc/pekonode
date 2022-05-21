@@ -45,8 +45,8 @@ func (nodeList *NodeList) New(localNode Node) {
 
 	//设置元数据信息
 	md := metadata{
-		Data:   "", //元数据内容
-		Update: 0,  //元数据更新时间戳
+		Data:   []byte(""), //元数据内容
+		Update: 0,          //元数据更新时间戳
 	}
 	nodeList.metadata.Store(md) //初始化元数据信息
 }
@@ -149,7 +149,7 @@ func (nodeList *NodeList) Get() []Node {
 }
 
 // Publish 在集群中发布新的元数据信息
-func (nodeList *NodeList) Publish(newMetadata string) {
+func (nodeList *NodeList) Publish(newMetadata []byte) {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
@@ -161,8 +161,8 @@ func (nodeList *NodeList) Publish(newMetadata string) {
 	nodeList.println("[Publish]:", nodeList.localNode, "/ [Metadata]:", newMetadata)
 
 	//将本地节点加入已传染的节点列表infected
-	var infected = make(map[string]int)
-	infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = 1
+	var infected = make(map[string]bool)
+	infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = true
 
 	//更新本地节点信息
 	nodeList.Set(nodeList.localNode)
@@ -191,13 +191,13 @@ func (nodeList *NodeList) Publish(newMetadata string) {
 }
 
 // Read 读取本地节点列表的元数据信息
-func (nodeList *NodeList) Read() string {
+func (nodeList *NodeList) Read() []byte {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
 		println("[Error]:", "Please use the New() function first")
 		//直接返回
-		return ""
+		return nil
 	}
 
 	return nodeList.metadata.Load().(metadata).Data

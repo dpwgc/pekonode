@@ -15,8 +15,8 @@ func task(nodeList *NodeList) {
 		}
 
 		//将本地节点加入已传染的节点列表infected
-		var infected = make(map[string]int)
-		infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = 1
+		var infected = make(map[string]bool)
+		infected[nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port)] = true
 
 		//更新本地节点信息
 		nodeList.Set(nodeList.localNode)
@@ -104,7 +104,9 @@ func broadcast(nodeList *NodeList, p packet) {
 
 	//取出所有未过期的节点
 	nodes := nodeList.Get()
-	var packets []packet
+
+	//本次广播的目标节点列表
+	var targetNodes []Node
 
 	//选取部分未被传染的节点
 	i := 0
@@ -117,27 +119,32 @@ func broadcast(nodeList *NodeList, p packet) {
 		}
 
 		//如果该节点已经被传染过了
-		if p.Infected[v.Addr+":"+strconv.Itoa(v.Port)] == 1 {
+		if p.Infected[v.Addr+":"+strconv.Itoa(v.Port)] {
 			//跳过该节点
 			continue
 		}
 
-		p.Infected[v.Addr+":"+strconv.Itoa(v.Port)] = 1 //标记该节点为已传染状态
-		p.TargetAddr = v.Addr                           //设置发送目标地址
-		p.TargetPort = v.Port                           //设置发送目标端口
+		p.Infected[v.Addr+":"+strconv.Itoa(v.Port)] = true //标记该节点为已传染状态
+
+		//设置发送目标节点
+		targetNode := Node{
+			Addr: v.Addr, //设置发送目标地址
+			Port: v.Port, //设置发送目标端口
+		}
 
 		//将该节点添加进广播列表
-		packets = append(packets, p)
+		targetNodes = append(targetNodes, targetNode)
 		i++
 	}
 
 	//向这些未被传染的节点广播传染数据
-	for _, v := range packets {
+	for _, v := range targetNodes {
 		bs, err := json.Marshal(p)
 		if err != nil {
 			println("[error]:", err)
 		}
-		write(v.TargetAddr, v.TargetPort, bs)
+		//发送
+		write(v.Addr, v.Port, bs)
 	}
 }
 
@@ -148,7 +155,7 @@ func swapRequest(nodeList *NodeList) {
 	p := packet{
 		//将本地节点信息存入数据包，接收方根据这个信息回复请求
 		Node:     nodeList.localNode,
-		Infected: make(map[string]int),
+		Infected: make(map[string]bool),
 		IsSwap:   1,
 		Metadata: nodeList.metadata.Load().(metadata),
 	}
@@ -180,7 +187,7 @@ func swapResponse(nodeList *NodeList, node Node) {
 	//设置为数据交换数据包
 	p := packet{
 		Node:     nodeList.localNode,
-		Infected: make(map[string]int),
+		Infected: make(map[string]bool),
 		IsSwap:   2,
 		Metadata: nodeList.metadata.Load().(metadata),
 	}
