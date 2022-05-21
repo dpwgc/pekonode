@@ -88,14 +88,16 @@ func main()  {
 	
 	//获取本地节点列表
 	list := nodeList.Get()
-	fmt.Println(list)       //打印节点列表
+	//打印节点列表
+	fmt.Println(list)
 	
 	//在集群中发布新的元数据信息
-	nodeList.Publish("test metadata")
+	nodeList.Publish([]byte("test metadata"))
 	
 	//读取本地元数据信息
 	metadata := nodeList.Read()
-	fmt.Println(metadata)   //打印元数据信息
+	//打印元数据信息
+	fmt.Println(string(metadata))
 	
 	//因为心跳广播这些工作都是在后台协程进行的，所以在调用Join函数后不能让主协程关闭，否则程序将直接退出
 	//无限循环
