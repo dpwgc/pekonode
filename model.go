@@ -7,12 +7,15 @@ import (
 
 // NodeList 节点列表
 type NodeList struct {
-	nodes   sync.Map //节点集合（key为Node结构体，value为节点最近更新的秒级时间戳）
-	Amount  int      //每次给多少个节点发送同步信息
-	Cycle   int64    //同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
-	Buffer  int      //UDP接收缓冲区大小（决定UDP监听服务可以异步处理多少个请求）
-	Size    int      //单个UDP心跳数据包的最大容量（单位：字节）
-	Timeout int64    //单个节点的过期删除界限（多少秒后删除）
+	nodes sync.Map //节点集合（key为Node结构体，value为节点最近更新的秒级时间戳）
+
+	Amount  int   //每次给多少个节点发送同步信息
+	Cycle   int64 //同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
+	Buffer  int   //UDP接收缓冲区大小（决定UDP监听服务可以异步处理多少个请求）
+	Size    int   //单个UDP心跳数据包的最大容量（单位：字节）
+	Timeout int64 //单个节点的过期删除界限（多少秒后删除）
+
+	SecretKey string //集群密钥，同一集群内的各个节点密钥应该保持一致
 
 	localNode Node //本地节点信息
 
@@ -35,7 +38,6 @@ type Node struct {
 
 // 数据包
 type packet struct {
-
 	//节点信息
 	Node     Node            //心跳数据包中的节点信息
 	Infected map[string]bool //已被该数据包传染的节点列表，key为Addr:Port拼接的字符串，value为判定该节点是否已被传染的参数（true：是，false：否）
@@ -44,6 +46,8 @@ type packet struct {
 	Metadata metadata //新的元数据信息，如果该数据包是元数据更新数据包（isUpdate=true），则用newData覆盖掉原先的集群元数据metadata
 	IsUpdate bool     //该数据包是否为元数据更新数据包（true：是，false：否）
 	IsSwap   uint8    //该数据包是否为元数据交换数据包（0：否，1：发起方将交换请求发送给接收方，2：接收方回应发送方，数据交换完成）
+
+	SecretKey string //集群密钥，如果不匹配则拒绝处理该数据包
 }
 
 //元数据信息

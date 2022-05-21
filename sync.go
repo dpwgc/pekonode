@@ -23,8 +23,9 @@ func task(nodeList *NodeList) {
 
 		//设置心跳数据包
 		p := packet{
-			Node:     nodeList.localNode,
-			Infected: infected,
+			Node:      nodeList.localNode,
+			Infected:  infected,
+			SecretKey: nodeList.SecretKey,
 		}
 
 		//广播心跳数据包
@@ -53,6 +54,12 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		bs := <-mq
 		var p packet
 		err := json.Unmarshal(bs, &p)
+
+		//如果数据包密钥与当前节点密钥不匹配
+		if p.SecretKey != nodeList.SecretKey {
+			//跳过，不处理该数据包
+			continue
+		}
 
 		//如果数据解析错误
 		if err != nil {
@@ -154,10 +161,11 @@ func swapRequest(nodeList *NodeList) {
 	//设置为数据交换数据包
 	p := packet{
 		//将本地节点信息存入数据包，接收方根据这个信息回复请求
-		Node:     nodeList.localNode,
-		Infected: make(map[string]bool),
-		IsSwap:   1,
-		Metadata: nodeList.metadata.Load().(metadata),
+		Node:      nodeList.localNode,
+		Infected:  make(map[string]bool),
+		IsSwap:    1,
+		Metadata:  nodeList.metadata.Load().(metadata),
+		SecretKey: nodeList.SecretKey,
 	}
 
 	//取出所有未过期的节点
@@ -186,10 +194,11 @@ func swapResponse(nodeList *NodeList, node Node) {
 
 	//设置为数据交换数据包
 	p := packet{
-		Node:     nodeList.localNode,
-		Infected: make(map[string]bool),
-		IsSwap:   2,
-		Metadata: nodeList.metadata.Load().(metadata),
+		Node:      nodeList.localNode,
+		Infected:  make(map[string]bool),
+		IsSwap:    2,
+		Metadata:  nodeList.metadata.Load().(metadata),
+		SecretKey: nodeList.SecretKey,
 	}
 
 	bs, err := json.Marshal(p)

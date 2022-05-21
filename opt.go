@@ -194,6 +194,8 @@ func (nodeList *NodeList) Publish(newMetadata []byte) {
 		//将数据包设为元数据更新数据包
 		Metadata: md,
 		IsUpdate: true,
+
+		SecretKey: nodeList.SecretKey,
 	}
 
 	//在集群中广播数据包

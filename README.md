@@ -256,6 +256,7 @@ type NodeList struct {
 	Buffer  int             //UDP接收缓冲区大小（决定UDP监听服务可以异步处理多少个请求）
 	Size    int             //单个UDP心跳数据包的最大容量，默认16k，如果需要同步较大的Metadata，请自行调大（单位：字节）
 	Timeout int64           //单个节点的过期删除界限（多少秒后删除）
+	SecretKey string        //集群密钥，同一集群内的各个节点密钥应该保持一致
 	localNode Node          //本地节点信息
 	ListenAddr string       //本地UDP监听地址，用这个监听地址接收其他节点发来的心跳包（一般填0.0.0.0即可）
 	status atomic.Value     //本地节点列表更新状态（true：正常运行，false：停止发布心跳）
