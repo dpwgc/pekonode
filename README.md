@@ -17,14 +17,14 @@
 ***
 
 ### 实现原理
-##### NodeList 节点列表信息同步
+##### `NodeList` 节点列表信息同步
 * 每个节点都有一个本地节点列表NodeList。
 * 每个节点的后台同步协程定时将节点信息封装成心跳数据包，并广播给集群中部分未被传染的节点。
 * 其他节点接收到心跳数据包后，更新自己的本地节点列表NodeList，再将该心跳数据包广播给集群中部分未被传染的节点。
 * 重复前一个广播步骤（谣言传播方式），直至所有节点都被传染，本次心跳传染结束。
 * 如果本地节点列表NodeList中，存在超时未发送心跳更新的节点，则删除该超时节点数据。
 
-##### Metadata 元数据信息同步
+##### `Metadata` 元数据信息同步
 * 在某一节点调用Publish()函数发布新的元数据后，新数据会扩散到各个节点，然后覆盖他们的本地元数据信息。
 * 每个节点都会定期选取一个随机的节点进行元数据交换检查操作，如发现某个节点上的元数据是旧的，则将其覆盖（反熵传播方式）。
 * 当有新节点加入到集群时，该节点会通过数据交换功能获取到最新的集群元数据信息。
@@ -35,9 +35,10 @@
 ```
 //Goland终端输入
 go get github.com/dpwgc/pekonode
-
+```
+```
 //程序中引入
-import "github.com/dpwgc/pekonode/gossip"
+import "github.com/dpwgc/pekonode"
 ```
 
 ***
@@ -48,7 +49,7 @@ import "github.com/dpwgc/pekonode/gossip"
 package main
 
 import (
-	"github.com/dpwgc/pekonode/gossip"
+	"github.com/dpwgc/pekonode"
 	"time"
 )
 
@@ -56,12 +57,12 @@ import (
 func main()  {
 
 	//配置该节点的本地节点列表nodeList参数
-	nodeList := gossip.NodeList{
+	nodeList := pekonode.NodeList{
 		IsPrint:    true,           //是否在控制台输出日志信息，不填默认为false
 	}
 
 	//创建本地节点列表，传入本地节点信息
-	nodeList.New(gossip.Node{
+	nodeList.New(pekonode.Node{
 		Addr: "0.0.0.0",		//本地节点IP地址，公网环境下请填写公网IP
 		Port: 8000,				//本地节点端口号
 		Name: "Test",           //节点名称，自定义填写
@@ -70,13 +71,13 @@ func main()  {
 
 	//往本地节点列表中添加新的节点信息，可添加多个节点，本地节点将会与这些新节点同步信息
 	//如果启动的是集群中的第一个节点，可不进行Set添加操作
-	nodeList.Set(gossip.Node{
+	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 9999,
 		Name: "Hello",
 		Tag: "Hello",
 	})
-	nodeList.Set(gossip.Node{
+	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 7777,
 		Name: "Hi",
@@ -115,7 +116,7 @@ func main()  {
 package main
 
 import (
-	"github.com/dpwgc/pekonode/gossip"
+	"github.com/dpwgc/pekonode"
 	"time"
 )
 
@@ -145,12 +146,12 @@ func main()  {
 //运行节点A（初始节点）
 func nodeA() {
 	//配置节点A的本地节点列表nodeList参数
-	nodeList := gossip.NodeList{
+	nodeList := pekonode.NodeList{
 		IsPrint:    true,			//是否在控制台输出日志信息
 	}
 
 	//创建节点A及其本地节点列表
-	nodeList.New(gossip.Node{
+	nodeList.New(pekonode.Node{
 		Addr: "0.0.0.0",		//本地节点IP地址，公网环境下请填写公网IP
 		Port: 8000,				//本地节点端口号
 		Name: "A-server",		//节点名称，自定义填写
@@ -166,12 +167,12 @@ func nodeA() {
 //运行节点B
 func nodeB() {
 	//配置节点B的本地节点列表nodeList参数
-	nodeList := gossip.NodeList{
+	nodeList := pekonode.NodeList{
 		IsPrint:    true,
 	}
 
 	//创建节点B及其本地节点列表
-	nodeList.New(gossip.Node{
+	nodeList.New(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
 		Name: "B-server",
@@ -179,7 +180,7 @@ func nodeB() {
 	})
 
 	//将初始节点A的信息加入到B节点的本地节点列表当中
-	nodeList.Set(gossip.Node{
+	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8000,
 		Name: "A-server",
@@ -192,12 +193,12 @@ func nodeB() {
 
 //运行节点C
 func nodeC() {
-	nodeList := gossip.NodeList{
+	nodeList := pekonode.NodeList{
 		IsPrint:    true,
 	}
 	
 	//创建节点C及其本地节点列表
-	nodeList.New(gossip.Node{
+	nodeList.New(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8002,
 		Name: "C-server",
@@ -205,13 +206,13 @@ func nodeC() {
 	})
 
 	//也可以在加入集群之前，在本地节点列表中添加多个节点信息
-	nodeList.Set(gossip.Node{
+	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8000,
 		Name: "A-server",
 		Tag: "A",			//将节点A的信息添加进节点C的本地节点列表
 	})
-	nodeList.Set(gossip.Node{
+	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
 		Name: "B-server",
@@ -232,7 +233,7 @@ func nodeC() {
 
 	//因为之前节点C下线，C的本地节点列表无法接收到各节点的心跳数据包，列表被清空
 	//所以要先往C的本地节点列表中添加一些集群节点，再调用Start()重启节点D的同步工作
-	nodeList.Set(gossip.Node{
+	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
 		Name: "B-server",
@@ -309,13 +310,13 @@ func (nodeList *NodeList) Get() []Node
 
 ##### Publish 在集群中发布新的元数据信息
 ```
-func (nodeList *NodeList) Publish(newMetadata string) 
+func (nodeList *NodeList) Publish(newMetadata []byte) 
 ```
 * newMetadata 新的元数据信息
 
 ##### Read 读取本地节点列表的元数据信息
 ```
-func (nodeList *NodeList) Read() string 
+func (nodeList *NodeList) Read() []byte 
 ```
 
 *** 
@@ -358,10 +359,9 @@ func (nodeList *NodeList) Read() string
 
 ### 项目结构
 * pekonode
-  * gossip
-    * model.go `结构体模板`
-    * opt.go `提供给外部的系列操作函数`
-    * print.go `控制台输出`
-    * sync.go `集群同步服务`
-    * udp.go `UDP收发服务`
+  * model.go `结构体模板`
+  * opt.go `提供给外部的系列操作函数`
+  * print.go `控制台输出`
+  * sync.go `集群同步服务`
+  * udp.go `UDP收发服务`
 
