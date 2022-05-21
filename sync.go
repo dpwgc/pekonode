@@ -1,4 +1,4 @@
-package gossip
+package pekonode
 
 import (
 	"encoding/json"

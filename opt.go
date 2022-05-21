@@ -1,4 +1,4 @@
-package gossip
+package pekonode
 
 import (
 	"strconv"
@@ -7,6 +7,11 @@ import (
 
 // New 初始化本地节点列表
 func (nodeList *NodeList) New(localNode Node) {
+
+	//Addr 缺省值：0.0.0.0
+	if localNode.Addr == "" {
+		localNode.Addr = "0.0.0.0"
+	}
 
 	//ListenAddr 缺省值：0.0.0.0
 	if nodeList.ListenAddr == "" {
@@ -119,6 +124,11 @@ func (nodeList *NodeList) Set(node Node) {
 		println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
+	}
+
+	//Addr 缺省值：0.0.0.0
+	if node.Addr == "" {
+		node.Addr = "0.0.0.0"
 	}
 
 	nodeList.nodes.Store(node, time.Now().Unix())
