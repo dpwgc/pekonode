@@ -14,17 +14,21 @@ func write(addr string, port int, data []byte) {
 	})
 	if err != nil {
 		println("[Error]:", err)
+		return
 	}
 
 	_, err = socket.Write(data) // 发送数据
 	if err != nil {
 		println("[Error]:", err)
+		return
 	}
 
-	err = socket.Close()
-	if err != nil {
-		println("[Error]:", err)
-	}
+	defer func(socket *net.UDPConn) {
+		err = socket.Close()
+		if err != nil {
+			println("[Error]:", err)
+		}
+	}(socket)
 }
 
 // listen udp服务端监听
