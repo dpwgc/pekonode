@@ -34,7 +34,9 @@ func task(nodeList *NodeList) {
 		//向集群中的某个节点发起数据交换请求
 		swapRequest(nodeList)
 
-		nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get(), "/ [Metadata]:", nodeList.Read())
+		if nodeList.IsPrint {
+			nodeList.println("[Listen]:", nodeList.ListenAddr+":"+strconv.Itoa(nodeList.localNode.Port), "/ [Node list]:", nodeList.Get())
+		}
 
 		//间隔时间
 		time.Sleep(time.Duration(nodeList.Cycle) * time.Second)
