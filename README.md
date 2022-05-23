@@ -53,7 +53,7 @@ nodeList := pekonode.NodeList{}
 ```
 nodeList.New(pekonode.Node{
 	Addr: "0.0.0.0",  //本地节点IP地址，公网环境下请填写公网IP
-	Port: 8000,	      //本地节点端口号
+	Port: 8000,       //本地节点端口号
 })
 ```
 * 往本地节点列表中添加新的节点信息
@@ -169,7 +169,7 @@ func main()  {
 // NodeList 节点列表
 type NodeList struct {
 	nodes   sync.Map        //节点集合（key为Node结构体，value为节点最近更新的秒级时间戳）
-	Amount  int             //每次给多少个节点发送同步信息
+	Amount  int             //每次给多少个节点发送同步信息（扇出度）
 	Cycle   int64           //同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
 	Buffer  int             //UDP接收缓冲区大小（决定UDP监听服务可以异步处理多少个请求）
 	Size    int             //单个UDP心跳数据包的最大容量，默认16k，如果需要同步较大的Metadata，请自行调大（单位：字节）
@@ -191,53 +191,6 @@ type Node struct {
 }
 ```
 
-***
-
-### 函数说明
-* nodeList 本地节点列表
-##### New 初始化本地节点列表
-```
-func (nodeList *NodeList) New(localNode Node) 
-```
-* localNode 本地节点信息
-
-##### Join 加入集群
-```
-func (nodeList *NodeList) Join() 
-```
-
-##### Stop 停止广播心跳
-```
-func (nodeList *NodeList) Stop() 
-```
-
-##### Start 重新开始广播心跳
-```
-func (nodeList *NodeList) Start() {
-```
-
-##### Set 向本地节点列表中加入其他节点信息
-```
-func (nodeList *NodeList) Set(node Node) 
-```
-* node 要添加进本地节点列表的某个集群节点信息
-
-##### Get 获取本地节点列表
-```
-func (nodeList *NodeList) Get() []Node 
-```
-
-##### Publish 在集群中发布新的元数据信息
-```
-func (nodeList *NodeList) Publish(newMetadata []byte) 
-```
-* newMetadata 新的元数据信息
-
-##### Read 读取本地节点列表的元数据信息
-```
-func (nodeList *NodeList) Read() []byte 
-```
-
 *** 
 
 ### 控制台打印信息
@@ -252,15 +205,15 @@ func (nodeList *NodeList) Read() []byte
 ```
 2022-05-19 14:52:23 [[Listen]: 0.0.0.0:8000 / [Node list]: [{0.0.0.0 8000 A-server A} {0.0.0.0 8001 B-server B}]]
 ```
-* Listen表示本地UDP监听服务地址与端口，Node list表示当前本地节点列表，Metadata表示当前本地元数据信息
+* Listen表示本地UDP监听服务地址与端口，Node list表示当前本地节点列表。
 
-##### 当暂停节点运行时，打印：
+##### 当暂停节点心跳广播时，打印：
 ```
 2022-05-19 14:52:06 [[Stop]: {0.0.0.0 8002 C-server C}]
 ```
 * 表示节点0.0.0.0:8002停止广播心跳数据包
 
-##### 当重新开始节点运行时，打印：
+##### 当重新开始节点心跳广播时，打印：
 ```
 2022-05-19 14:52:36 [[Start]: {0.0.0.0 8002 C-server C}]
 ```
