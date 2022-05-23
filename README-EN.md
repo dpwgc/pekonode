@@ -159,7 +159,7 @@ func main()  {
 ***
 
 ### Complete usage example
-Sample file：`/test/local_test.go`
+Full test file: `/test/local_test.go`
 * Operation mode 1：Run `test.bat`（windows）or `test.sh`（linux）file。
 * Operation mode 2：cd `/test`, run `go test`.
 
@@ -190,6 +190,42 @@ type Node struct {
 	Tag  string     // Node tag (custom, you can write some basic information)
 }
 ```
+
+***
+### Console print information
+#### When the IsPrint parameter of NodeList is set to true, the program will print out the running information on the console.
+##### When the node joins the cluster, print:
+```
+2022-05-19 14:51:23 [[Join]: {0.0.0.0 8000 A-server A}]
+```
+* Indicates that node 0.0.0.0:8000 joins the cluster
+
+##### When a node publishes a heartbeat, print:
+```
+2022-05-19 14:52:23 [[Listen]: 0.0.0.0:8000 / [Node list]: [{0.0.0.0 8000 A-server A} {0.0.0.0 8001 B-server B}]]
+```
+* Listen indicates the address and port of the local UDP listening service, and Node list indicates the current local node list.
+
+##### When the node heartbeat broadcast is paused, print:
+```
+2022-05-19 14:52:06 [[Stop]: {0.0.0.0 8002 C-server C}]
+```
+* Indicates that node 0.0.0.0:8002 stops broadcasting heartbeat packets.
+
+##### When restarting the node heartbeat broadcast, print:
+```
+2022-05-19 14:52:36 [[Start]: {0.0.0.0 8002 C-server C}]
+```
+* Indicates that node 0.0.0.0:8002 restarts broadcasting heartbeat packets.
+
+##### When metadata is exchanged between two nodes, print:
+```
+2022-05-20 13:12:26 [[Swap Request]: 0.0.0.0:8002 -> 0.0.0.0:8000]
+2022-05-20 13:12:26 [[Swap Response]: 0.0.0.0:8002 <- 0.0.0.0:8000]
+```
+* The 8002 node initiates a data exchange request to the 8000 node.
+* The 8000 node responds to the exchange request of the 8002 node, and the data exchange work is completed.
+
 
 ***
 
