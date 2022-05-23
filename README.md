@@ -42,6 +42,53 @@ import "github.com/dpwgc/pekonode"
 ```
 
 ***
+### 使用方法
+* 配置本地节点列表`nodeList`参数
+```
+nodeList := pekonode.NodeList{}
+```
+
+* 初始化本地节点列表，传入本地节点信息
+```
+nodeList.New(pekonode.Node{
+	Addr: "0.0.0.0",  //本地节点IP地址，公网环境下请填写公网IP
+	Port: 8000,	      //本地节点端口号
+})
+```
+* 往本地节点列表中添加新的节点信息
+```
+nodeList.Set(pekonode.Node{
+	Addr: "0.0.0.0",
+	Port: 9999,
+})
+```
+* 将该节点加入Gossip集群（在后台启动心跳广播与监听协程）
+```
+nodeList.Join()
+```
+* 获取本地节点列表
+```
+list := nodeList.Get()
+fmt.Println(list)
+```
+* 节点停止发布心跳
+```
+nodeList.Stop()
+```
+* 节点重新开始发布心跳
+```
+nodeList.Start()
+```
+* 在集群中发布新的元数据信息
+```
+nodeList.Publish([]byte("test metadata"))
+```
+* 获取本地元数据信息
+```
+metadata := nodeList.Read()
+fmt.Println(string(metadata))
+```
+***
 
 ### 简单使用示例
 #### 启动一个节点
@@ -110,8 +157,10 @@ func main()  {
 
 ***
 
-### 完整功能测试
-cd到项目`/test`目录，终端运行`go test`命令
+### 完整使用示例
+示例文件：`/test/local_test.go`
+* 运行方式一：运行`test.bat`（windows）或`test.sh`（linux）文件。
+* 运行方式二：cd到项目`/test`目录，终端运行`go test`命令，运行`local_test.go`文件。
 
 ***
 ### 模板说明

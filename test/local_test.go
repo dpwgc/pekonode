@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//测试用例-启动四个节点，构成一个Gossip集群
+//完整测试用例-在本地启动四个节点，构成一个Gossip集群
 func TestFourNode(t *testing.T) {
 
 	//先启动节点A（初始节点）
@@ -19,17 +19,20 @@ func TestFourNode(t *testing.T) {
 	//启动节点D
 	nodeD()
 
-	for {
-		time.Sleep(10 * time.Second)
-	}
+	//延迟10秒
+	time.Sleep(10 * time.Second)
+
+	//结束测试
+	fmt.Println("End")
+	time.Sleep(3 * time.Second)
 }
 
 //运行节点A（初始节点）
 func nodeA() {
 	//配置节点A的本地节点列表nodeList参数
 	nodeList := pekonode.NodeList{
-		SecretKey: "test_key",
-		IsPrint:   true, //是否在控制台输出日志信息
+		SecretKey: "test_key", //密钥，集群中的各个节点的密钥需保持一致，否则无法连接集群
+		IsPrint:   true,       //是否在控制台输出日志信息
 	}
 
 	//创建节点A及其本地节点列表
@@ -171,4 +174,11 @@ func nodeD() {
 
 	//调用Join后，节点D会自动与节点A进行数据同步
 	nodeList.Join()
+
+	//延迟5秒
+	time.Sleep(5 * time.Second)
+
+	//读取本地元数据信息
+	metadata := nodeList.Read()
+	fmt.Println("Metadata:", string(metadata)) //打印元数据信息
 }

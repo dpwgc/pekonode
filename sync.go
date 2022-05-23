@@ -59,6 +59,7 @@ func consume(nodeList *NodeList, mq chan []byte) {
 
 		//如果数据包密钥与当前节点密钥不匹配
 		if p.SecretKey != nodeList.SecretKey {
+			println("[error]:", "The secretKey do not match")
 			//跳过，不处理该数据包
 			continue
 		}
@@ -186,7 +187,10 @@ func swapRequest(nodeList *NodeList) {
 		}
 		//发送请求
 		write(nodes[i].Addr, nodes[i].Port, bs)
-		nodeList.println("[Swap Request]:", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port), "->", nodes[i].Addr+":"+strconv.Itoa(nodes[i].Port))
+
+		if nodeList.IsPrint {
+			nodeList.println("[Swap Request]:", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port), "->", nodes[i].Addr+":"+strconv.Itoa(nodes[i].Port))
+		}
 		break
 	}
 }
@@ -211,5 +215,7 @@ func swapResponse(nodeList *NodeList, node Node) {
 	//回应发起节点
 	write(node.Addr, node.Port, bs)
 
-	nodeList.println("[Swap Response]:", node.Addr+":"+strconv.Itoa(node.Port), "<-", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port))
+	if nodeList.IsPrint {
+		nodeList.println("[Swap Response]:", node.Addr+":"+strconv.Itoa(node.Port), "<-", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port))
+	}
 }
