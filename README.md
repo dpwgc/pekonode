@@ -110,140 +110,8 @@ func main()  {
 
 ***
 
-### 完整使用示例
-#### 启动ABC三个节点，构成一个Gossip集群
-```
-package main
-
-import (
-	"github.com/dpwgc/pekonode"
-	"time"
-)
-
-//完整使用示例
-func main()  {
-
-	//先启动节点A（初始节点）
-	nodeA()
-
-	//延迟3秒
-	time.Sleep(3*time.Second)
-
-	//启动节点B
-	nodeB()
-
-	//延迟10秒
-	time.Sleep(10*time.Second)
-
-	//启动节点C
-	nodeC()
-
-	for {
-		time.Sleep(10*time.Second)
-	}
-}
-
-//运行节点A（初始节点）
-func nodeA() {
-	//配置节点A的本地节点列表nodeList参数
-	nodeList := pekonode.NodeList{
-		IsPrint:    true,			//是否在控制台输出日志信息
-	}
-
-	//创建节点A及其本地节点列表
-	nodeList.New(pekonode.Node{
-		Addr: "0.0.0.0",		//本地节点IP地址，公网环境下请填写公网IP
-		Port: 8000,				//本地节点端口号
-		Name: "A-server",		//节点名称，自定义填写
-		Tag: "A",				//节点标签，自定义填写，可以填一些节点基本信息
-	})
-	
-	//因为是第一个启动的节点，所以不需要用Set函数添加其他节点
-
-	//本地节点加入Gossip集群，本地节点列表与集群中的各个节点所存储的节点列表进行数据同步
-	nodeList.Join()
-}
-
-//运行节点B
-func nodeB() {
-	//配置节点B的本地节点列表nodeList参数
-	nodeList := pekonode.NodeList{
-		IsPrint:    true,
-	}
-
-	//创建节点B及其本地节点列表
-	nodeList.New(pekonode.Node{
-		Addr: "0.0.0.0",
-		Port: 8001,
-		Name: "B-server",
-		Tag: "B",
-	})
-
-	//将初始节点A的信息加入到B节点的本地节点列表当中
-	nodeList.Set(pekonode.Node{
-		Addr: "0.0.0.0",
-		Port: 8000,
-		Name: "A-server",
-		Tag: "A",			//将节点A的信息添加进节点B的本地节点列表
-	})
-
-	//调用Join后，节点B会自动与节点A进行数据同步
-	nodeList.Join()
-}
-
-//运行节点C
-func nodeC() {
-	nodeList := pekonode.NodeList{
-		IsPrint:    true,
-	}
-	
-	//创建节点C及其本地节点列表
-	nodeList.New(pekonode.Node{
-		Addr: "0.0.0.0",
-		Port: 8002,
-		Name: "C-server",
-		Tag: "C",
-	})
-
-	//也可以在加入集群之前，在本地节点列表中添加多个节点信息
-	nodeList.Set(pekonode.Node{
-		Addr: "0.0.0.0",
-		Port: 8000,
-		Name: "A-server",
-		Tag: "A",			//将节点A的信息添加进节点C的本地节点列表
-	})
-	nodeList.Set(pekonode.Node{
-		Addr: "0.0.0.0",
-		Port: 8001,
-		Name: "B-server",
-		Tag: "B",			//将节点B的信息添加进节点C的本地节点列表
-	})
-
-	//在加入集群后，节点C将会与上面的节点A及节点B进行数据同步
-	nodeList.Join()
-
-	//延迟30秒
-	time.Sleep(30*time.Second)
-
-	//停止节点C的心跳广播服务（节点C暂时下线）
-	nodeList.Stop()
-
-	//延迟30秒
-	time.Sleep(30*time.Second)
-
-	//因为之前节点C下线，C的本地节点列表无法接收到各节点的心跳数据包，列表被清空
-	//所以要先往C的本地节点列表中添加一些集群节点，再调用Start()重启节点D的同步工作
-	nodeList.Set(pekonode.Node{
-		Addr: "0.0.0.0",
-		Port: 8001,
-		Name: "B-server",
-		Tag: "B",		//这里添加节点B的信息
-	})
-
-	//重启节点C的心跳广播服务（节点C重新上线）
-	nodeList.Start()
-}
-```
+### 完整功能测试
+cd到项目`/test`目录，终端运行`go test`命令
 
 ***
 ### 模板说明
@@ -332,7 +200,7 @@ func (nodeList *NodeList) Read() []byte
 
 ##### 当节点发布心跳时，打印：
 ```
-2022-05-19 14:52:23 [[Listen]: 0.0.0.0:8000 / [Node list]: [{0.0.0.0 8000 A-server A} {0.0.0.0 8001 B-server B}] / [Metadata]: test metadata]
+2022-05-19 14:52:23 [[Listen]: 0.0.0.0:8000 / [Node list]: [{0.0.0.0 8000 A-server A} {0.0.0.0 8001 B-server B}]]
 ```
 * Listen表示本地UDP监听服务地址与端口，Node list表示当前本地节点列表，Metadata表示当前本地元数据信息
 
@@ -360,6 +228,8 @@ func (nodeList *NodeList) Read() []byte
 
 ### 项目结构
 * pekonode
+  * test
+    * local_test.go `完整功能测试文件` 
   * model.go `结构体模板`
   * opt.go `提供给外部的系列操作函数`
   * print.go `控制台输出`
