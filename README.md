@@ -52,8 +52,8 @@ nodeList := pekonode.NodeList{}
 * Initialize the local node list and pass in the local node information
 ```
 nodeList.New(pekonode.Node{
-	Addr: "0.0.0.0",  //本地节点IP地址，公网环境下请填写公网IP
-	Port: 8000,	      //本地节点端口号
+	Addr: "0.0.0.0",  // IP address of the local node, please fill in the public network IP in the public network environment
+	Port: 8000,       // Local node port number
 })
 ```
 * Add new node information to the local node list
