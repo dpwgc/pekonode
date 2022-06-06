@@ -1,6 +1,6 @@
 # PekoNode
 
-## A Gossip protocol toolkit based on Golang integrated UDP implementation
+## A Gossip protocol toolkit based on Golang integrated UDP/TCP implementation
 
 ![MIT](https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=red)
 ![Go](https://img.shields.io/static/v1?label=Go&message=v1.17&color=blue)

@@ -46,7 +46,7 @@ func task(nodeList *NodeList) {
 //监听其他节点发来的同步信息
 func listener(nodeList *NodeList, mq chan []byte) {
 	//监听协程
-	listen(nodeList.ListenAddr, nodeList.localNode.Port, nodeList.Size, mq)
+	listen(nodeList, mq)
 }
 
 //消费信息
@@ -154,7 +154,7 @@ func broadcast(nodeList *NodeList, p packet) {
 			println("[error]:", err)
 		}
 		//发送
-		write(v.Addr, v.Port, bs)
+		write(nodeList, v.Addr, v.Port, bs)
 	}
 }
 
@@ -186,7 +186,7 @@ func swapRequest(nodeList *NodeList) {
 			continue
 		}
 		//发送请求
-		write(nodes[i].Addr, nodes[i].Port, bs)
+		write(nodeList, nodes[i].Addr, nodes[i].Port, bs)
 
 		if nodeList.IsPrint {
 			nodeList.println("[Swap Request]:", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port), "->", nodes[i].Addr+":"+strconv.Itoa(nodes[i].Port))
@@ -213,7 +213,7 @@ func swapResponse(nodeList *NodeList, node Node) {
 	}
 
 	//回应发起节点
-	write(node.Addr, node.Port, bs)
+	write(nodeList, node.Addr, node.Port, bs)
 
 	if nodeList.IsPrint {
 		nodeList.println("[Swap Response]:", node.Addr+":"+strconv.Itoa(node.Port), "<-", nodeList.localNode.Addr+":"+strconv.Itoa(nodeList.localNode.Port))

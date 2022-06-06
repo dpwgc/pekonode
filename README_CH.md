@@ -1,6 +1,6 @@
 # PekoNode
 
-## 一个基于Golang整合UDP实现的Gossip协议工具包
+## 一个基于Golang整合UDP/TCP实现的Gossip协议工具包
 
 ![MIT](https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=red)
 ![Go](https://img.shields.io/static/v1?label=Go&message=v1.17&color=blue)

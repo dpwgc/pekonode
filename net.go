@@ -1,11 +1,19 @@
 package pekonode
 
 // write 发送数据
-func write(addr string, port int, data []byte) {
-	udpWrite(addr, port, data)
+func write(nodeList *NodeList, addr string, port int, data []byte) {
+	if nodeList.Protocol != "TCP" {
+		udpWrite(addr, port, data)
+	} else {
+		tcpWrite(addr, port, data)
+	}
 }
 
 // listen 服务端监听
-func listen(addr string, port int, size int, mq chan []byte) {
-	udpListen(addr, port, size, mq)
+func listen(nodeList *NodeList, mq chan []byte) {
+	if nodeList.Protocol != "TCP" {
+		udpListen(nodeList.ListenAddr, nodeList.localNode.Port, nodeList.Size, mq)
+	} else {
+		tcpListen(nodeList.ListenAddr, nodeList.localNode.Port, nodeList.Size, mq)
+	}
 }
