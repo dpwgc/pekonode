@@ -46,7 +46,9 @@ import "github.com/dpwgc/pekonode"
 ### Instructions
 * Configure the local node list `nodeList`
 ```
-nodeList := pekonode.NodeList{}
+nodeList := pekonode.NodeList{
+        IsPrint:   true, // Whether to print the list synchronization information to the console
+}
 ```
 
 * Initialize the local node list and pass in the local node information

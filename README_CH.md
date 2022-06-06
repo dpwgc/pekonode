@@ -46,7 +46,9 @@ import "github.com/dpwgc/pekonode"
 ### 使用方法
 * 配置本地节点列表`nodeList`参数
 ```
-nodeList := pekonode.NodeList{}
+nodeList := pekonode.NodeList{
+        IsPrint:   true, //是否打印列表同步信息到控制台
+}
 ```
 
 * 初始化本地节点列表，传入本地节点信息
