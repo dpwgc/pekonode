@@ -176,6 +176,7 @@ type NodeList struct {
 	Timeout int64           //单个节点的过期删除界限（多少秒后删除）
 	SecretKey string        //集群密钥，同一集群内的各个节点密钥应该保持一致
 	localNode Node          //本地节点信息
+	Protocol string         //集群连接使用的网络协议，UDP或TCP，默认UDP
 	ListenAddr string       //本地UDP监听地址，用这个监听地址接收其他节点发来的心跳包（一般填0.0.0.0即可）
 	status atomic.Value     //本地节点列表更新状态（true：正常运行，false：停止发布心跳）
 	IsPrint bool            //是否打印列表同步信息到控制台
@@ -237,5 +238,7 @@ type Node struct {
   * opt.go `提供给外部的系列操作函数`
   * print.go `控制台输出`
   * sync.go `集群同步服务`
+  * net.go `网络服务`
   * udp.go `UDP收发服务`
+  * tcp.go `TCP收发服务`
 

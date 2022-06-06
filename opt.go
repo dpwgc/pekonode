@@ -13,6 +13,11 @@ func (nodeList *NodeList) New(localNode Node) {
 		localNode.Addr = "0.0.0.0"
 	}
 
+	//Protocol 缺省值：UDP
+	if nodeList.Protocol != "TCP" {
+		nodeList.Protocol = "UDP"
+	}
+
 	//ListenAddr 缺省值：0.0.0.0
 	if nodeList.ListenAddr == "" {
 		nodeList.ListenAddr = "0.0.0.0"

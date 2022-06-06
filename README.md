@@ -176,6 +176,7 @@ type NodeList struct {
 	Timeout int64           // Expired deletion limit for a single node (how many seconds to delete)
 	SecretKey string        // Cluster secret key, the keys of each node in the same cluster should be consistent
 	localNode Node          // local node information
+	Protocol string         // Network protocol used for cluster connection, UDP or TCP, default UDP
 	ListenAddr string       // Local UDP listening address, use this listening address to receive heartbeat packets from other nodes (generally fill in 0.0.0.0)
 	status atomic.Value     // Local node list update status (true: normal operation, false: stop publishing heartbeats)
 	IsPrint bool            // Whether to print the list synchronization information to the console
@@ -237,4 +238,6 @@ type Node struct {
     * opt.go `Provided to external series operation functions`
     * print.go `Console output`
     * sync.go `Cluster synchronization service`
+    * net.go `network service`
     * udp.go `UDP sending and receiving service`
+    * tcp.go `TCP sending and receiving service`

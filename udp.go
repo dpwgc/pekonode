@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-// write 发送udp数据
-func write(addr string, port int, data []byte) {
+// udpWrite 发送udp数据
+func udpWrite(addr string, port int, data []byte) {
 	socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
 		IP:   net.ParseIP(addr),
 		Port: port,
@@ -31,8 +31,8 @@ func write(addr string, port int, data []byte) {
 	}(socket)
 }
 
-// listen udp服务端监听
-func listen(addr string, port int, size int, mq chan []byte) {
+// udpListen udp服务端监听
+func udpListen(addr string, port int, size int, mq chan []byte) {
 
 	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
 	if err != nil {
