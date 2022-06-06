@@ -6,7 +6,7 @@
 ![Go](https://img.shields.io/static/v1?label=Go&message=v1.17&color=blue)
 [![github](https://img.shields.io/static/v1?label=Github&message=pekonode&color=blue)](https://github.com/dpwgc/pekonode)
 
-#### [中文文档：README_CH.md](./README_CH.md)
+## [中文文档：README_CH.md](./README_CH.md)
 ***
 ### Implement function
 ##### Cluster node list sharing

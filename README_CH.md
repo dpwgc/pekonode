@@ -6,7 +6,7 @@
 ![Go](https://img.shields.io/static/v1?label=Go&message=v1.17&color=blue)
 [![github](https://img.shields.io/static/v1?label=Github&message=pekonode&color=blue)](https://github.com/dpwgc/pekonode)
 
-#### [English document: README.md](./README.md)
+## [English document: README.md](./README.md)
 ***
 ### 实现功能
 ##### 集群节点列表共享
