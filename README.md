@@ -159,9 +159,7 @@ func main()  {
 ***
 
 ### Complete usage example
-Full test file: `/test/local_test.go`
-* Operation mode 1：Run `test.bat`（windows）or `test.sh`（linux）file。
-* Operation mode 2：cd `/test`, run `go test`.
+Test files: Under `/test` directory
 
 ***
 ### Structure Description
@@ -232,8 +230,7 @@ type Node struct {
 
 ### Project structure
 * pekonode
-    * test
-        * local_test.go `Full functional test file`
+    * test `Test files`
     * model.go `Struct template`
     * opt.go `Provided to external series operation functions`
     * print.go `Console output`
@@ -241,3 +238,4 @@ type Node struct {
     * net.go `network service`
     * udp.go `UDP sending and receiving service`
     * tcp.go `TCP sending and receiving service`
+    * md5.go `MD5 key generation`

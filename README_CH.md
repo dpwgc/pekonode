@@ -159,9 +159,7 @@ func main()  {
 ***
 
 ### 完整使用示例
-示例文件：`/test/local_test.go`
-* 运行方式一：运行`test.bat`（windows）或`test.sh`（linux）文件。
-* 运行方式二：cd到项目`/test`目录，终端运行`go test`命令，运行`local_test.go`文件。
+示例文件：`/test` 目录下
 
 ***
 ### 模板说明
@@ -232,8 +230,7 @@ type Node struct {
 
 ### 项目结构
 * pekonode
-  * test
-    * local_test.go `完整功能测试文件` 
+  * test `测试文件`
   * model.go `结构体模板`
   * opt.go `提供给外部的系列操作函数`
   * print.go `控制台输出`
@@ -241,4 +238,5 @@ type Node struct {
   * net.go `网络服务`
   * udp.go `UDP收发服务`
   * tcp.go `TCP收发服务`
+  * md5.go `MD5密钥生成`
 

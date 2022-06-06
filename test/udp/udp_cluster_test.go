@@ -7,8 +7,13 @@ import (
 	"time"
 )
 
-//完整测试用例-在本地启动四个节点，构成一个Gossip集群
-func TestFourNode(t *testing.T) {
+//完整测试用例-在本地启动四个节点，构成一个Gossip集群（UDP）
+func TestUDPCluster(t *testing.T) {
+
+	fmt.Println("---- Start a gossip cluster (UDP) ----")
+
+	//使用UDP连接集群节点
+	protocol = "UDP"
 
 	//先启动节点A（初始节点）
 	nodeA()
@@ -23,14 +28,16 @@ func TestFourNode(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	//结束测试
-	fmt.Println("End")
-	time.Sleep(3 * time.Second)
+	fmt.Println("---- End ----")
 }
+
+var protocol string
 
 //运行节点A（初始节点）
 func nodeA() {
 	//配置节点A的本地节点列表nodeList参数
 	nodeList := pekonode.NodeList{
+		Protocol:  protocol,   //集群节点连接所使用的网络协议
 		SecretKey: "test_key", //密钥，集群中的各个节点的密钥需保持一致，否则无法连接集群
 		IsPrint:   true,       //是否在控制台输出日志信息
 	}
@@ -56,6 +63,7 @@ func nodeA() {
 func nodeB() {
 	//配置节点B的本地节点列表nodeList参数
 	nodeList := pekonode.NodeList{
+		Protocol:  protocol, //集群节点连接所使用的网络协议
 		SecretKey: "test_key",
 		IsPrint:   true,
 	}
@@ -86,6 +94,7 @@ func nodeB() {
 //运行节点C
 func nodeC() {
 	nodeList := pekonode.NodeList{
+		Protocol:  protocol, //集群节点连接所使用的网络协议
 		SecretKey: "test_key",
 		IsPrint:   true,
 	}
@@ -152,6 +161,7 @@ func nodeC() {
 func nodeD() {
 	//配置节点D的本地节点列表nodeList参数
 	nodeList := pekonode.NodeList{
+		Protocol:  protocol, //集群节点连接所使用的网络协议
 		SecretKey: "test_key",
 		IsPrint:   true,
 	}

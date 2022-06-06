@@ -1,2 +1,0 @@
-cd test
-go test
