@@ -142,7 +142,7 @@ func nodeC() {
 	nodeList.Stop()
 
 	//延迟30秒
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	//因为之前节点C下线，C的本地节点列表无法接收到各节点的心跳数据包，列表被清空
 	//所以要先往C的本地节点列表中添加一些集群节点，再调用Start()重启节点D的同步工作
