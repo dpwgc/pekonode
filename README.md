@@ -171,13 +171,13 @@ type NodeList struct {
 	nodes   sync.Map        // Node set (key is the Node structure, value is the second-level timestamp of the latest update of the node)
 	Amount  int             // Fan-out, How many nodes to send synchronization information to each time
 	Cycle   int64           // Synchronization time period (how many seconds to send list synchronization information to other nodes)
-	Buffer  int             // UDP receive buffer size (determines how many requests the UDP listening service can handle asynchronously)
-	Size    int             // The maximum capacity of a single UDP heartbeat data packet, the default is 16k, if you need to synchronize larger metadata, please increase it yourself (unit: bytes)
+	Buffer  int             // UDP/TCP receive buffer size (determines how many requests the UDP/TCP listening service can handle asynchronously)
+	Size    int             // The maximum capacity of a single UDP/TCP heartbeat data packet, the default is 16k, if you need to synchronize larger metadata, please increase it yourself (unit: bytes)
 	Timeout int64           // Expired deletion limit for a single node (how many seconds to delete)
 	SecretKey string        // Cluster secret key, the keys of each node in the same cluster should be consistent
 	localNode Node          // local node information
 	Protocol string         // Network protocol used for cluster connection, UDP or TCP, default UDP
-	ListenAddr string       // Local UDP listening address, use this listening address to receive heartbeat packets from other nodes (generally fill in 0.0.0.0)
+	ListenAddr string       // Local UDP/TCP listening address, use this listening address to receive heartbeat packets from other nodes (generally fill in 0.0.0.0)
 	status atomic.Value     // Local node list update status (true: normal operation, false: stop publishing heartbeats)
 	IsPrint bool            // Whether to print the list synchronization information to the console
 	metadata atomic.Value   // Metadata, equivalent to the public data of the cluster (can store some public configuration information)

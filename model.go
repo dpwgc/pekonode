@@ -11,8 +11,8 @@ type NodeList struct {
 
 	Amount  int   //每次给多少个节点发送同步信息
 	Cycle   int64 //同步时间周期（每隔多少秒向其他节点发送一次列表同步信息）
-	Buffer  int   //UDP接收缓冲区大小（决定UDP监听服务可以异步处理多少个请求）
-	Size    int   //单个UDP心跳数据包的最大容量（单位：字节）
+	Buffer  int   //UDP/TCP接收缓冲区大小（决定UDP/TCP监听服务可以异步处理多少个请求）
+	Size    int   //单个UDP/TCP心跳数据包的最大容量（单位：字节）
 	Timeout int64 //单个节点的过期删除界限（多少秒后删除）
 
 	SecretKey string //集群密钥，同一集群内的各个节点密钥应该保持一致
