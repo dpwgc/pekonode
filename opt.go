@@ -48,6 +48,11 @@ func (nodeList *NodeList) New(localNode Node) {
 		nodeList.Timeout = nodeList.Cycle*3 + 2
 	}
 
+	//如果密钥设置不为空，则对密钥进行md5加密
+	if nodeList.SecretKey != "" {
+		nodeList.SecretKey = md5Sign(nodeList.SecretKey)
+	}
+
 	//初始化本地节点列表的基础数据
 	nodeList.nodes.Store(localNode, time.Now().Unix()) //将本地节点信息添加进节点集合
 	nodeList.localNode = localNode                     //初始化本地节点信息
