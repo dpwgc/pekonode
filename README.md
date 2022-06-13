@@ -13,6 +13,8 @@
 * Synchronize the list of cluster nodes through rumor propagation `NodeList` (Each node will eventually store a complete list of nodes that can be used in service registration discovery scenarios)
 ##### Cluster metadata information sharing
 * Publishing cluster metadata information through rumor spreading `Metadata` (The public data of the cluster, the local metadata information of each node is eventually consistent, and the storage content can be customized, such as storing some public configuration information, acting as a configuration center), The metadata verification and error correction function of each node of the cluster is realized through data exchange.
+##### TCP or UDP protocol can be used to realize bottom communication interaction
+* Customize the underlying communication protocol through the `NodeList - Protocol` field. UDP is used by default. If you want to pursue high reliability, you can use TCP.
 ##### Custom configuration
 * The node list `NodeList` list provides a series of parameters for users to customize and configure. Users can use the default parameters, or fill in the parameters according to their needs.
 ***
@@ -25,20 +27,24 @@
 * Repeat the previous broadcast step (rumor propagation method) until all nodes are infected, and this heartbeat infection ends.
 * If there is a node in the local node list NodeList that has not sent the heartbeat update after timeout, delete the data of the timeout node.
 
+![](img/1.png)
+
 ##### `Metadata` Metadata information synchronization
 * After a node calls the Publish() function to publish new metadata, the new data will spread to each node and then overwrite their local metadata information.
 * Each node will periodically select a random node for metadata exchange check operation. If the metadata on a node is found to be old, it will be overwritten (anti-entropy propagation method).
 * When a new node joins the cluster, the node will obtain the latest cluster metadata information through the data exchange function.
 
+![](img/2.png)
+
 ***
 
 ### Import package
+* Goland terminal input
 ```
-// Goland terminal input
 go get github.com/dpwgc/pekonode
 ```
+* Introduced in the program
 ```
-// Introduced in the program
 import "github.com/dpwgc/pekonode"
 ```
 
@@ -51,28 +57,33 @@ nodeList := pekonode.NodeList{
 }
 ```
 
-* Initialize the local node list and pass in the local node information
+* Initialize the local node list and set local node information `0.0.0.0:8000`
 ```
 nodeList.New(pekonode.Node{
 	Addr: "0.0.0.0",  // IP address of the local node, please fill in the public network IP in the public network environment
-	Port: 8000,       // Local node port number
+	Port: 8000,       // Local node port number (Listen to the information sent by other nodes through this port)
 })
 ```
-* Add new node information to the local node list
+* Add other node information to the local node list `0.0.0.0:9999`
 ```
+// 0.0.0.0:9999 is a node that has been started in the cluster
 nodeList.Set(pekonode.Node{
 	Addr: "0.0.0.0",
 	Port: 9999,
 })
 ```
-* Add the node to the Gossip cluster (start the heartbeat broadcast and listening coroutine in the background)
+* Add the node  `0.0.0.0:8000`  to the Gossip cluster (start the heartbeat broadcast and listening coroutine in the background)
 ```
+// After joining the cluster, node 0.0.0.0:8000 will establish contact with node 0.0.0:9999
 nodeList.Join()
 ```
 * Get local node list
 ```
 list := nodeList.Get()
+
 fmt.Println(list)
+
+// list: 0.0.0.0:8000, 0.0.0.0:9999
 ```
 * Node stops publishing heartbeats
 ```
@@ -89,6 +100,7 @@ nodeList.Publish([]byte("test metadata"))
 * Get local metadata information
 ```
 metadata := nodeList.Read()
+
 fmt.Println(string(metadata))
 ```
 ***
@@ -162,6 +174,9 @@ func main()  {
 
 ### Complete usage example
 Test files: Under `/test` directory
+* test
+  * tcp `TCP cluster connection test`
+  * udp `UDP cluster connection test`
 
 ***
 ### Structure Description
@@ -233,7 +248,7 @@ type Node struct {
 ### Project structure
 * pekonode
     * test `Test files`
-    * model.go `Struct template`
+    * config.go `Configure template`
     * opt.go `Provided to external series operation functions`
     * print.go `Console output`
     * sync.go `Cluster synchronization service`
