@@ -64,7 +64,7 @@ nodeList.New(pekonode.Node{
 	Port: 8000,       // Local node port number (Listen to the information sent by other nodes through this port)
 })
 ```
-* Add other node information to the local node list `0.0.0.0:9999`
+* Add other node information `0.0.0.0:9999` to the local node list
 ```
 // 0.0.0.0:9999 is a node that has been started in the cluster
 nodeList.Set(pekonode.Node{
@@ -179,7 +179,7 @@ Test files: Under `/test` directory
   * udp `UDP cluster connection test`
 
 ***
-### Structure Description
+### Configuration description
 ```
 // NodeList
 type NodeList struct {

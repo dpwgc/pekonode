@@ -179,7 +179,7 @@ func main()  {
   * udp `UDP集群连接测试`
 
 ***
-### 模板说明
+### 配置说明
 ```
 // NodeList 节点列表
 type NodeList struct {
