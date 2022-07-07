@@ -189,8 +189,8 @@ func (nodeList *NodeList) Publish(newMetadata []byte) {
 
 	//设置新的元数据信息
 	md := metadata{
-		Data:   newMetadata,       //元数据内容
-		Update: time.Now().Unix(), //元数据更新时间戳
+		Data:   newMetadata,           //元数据内容
+		Update: time.Now().UnixNano(), //元数据更新时间戳
 	}
 
 	//更新本地节点的元数据信息
