@@ -31,10 +31,10 @@ type NodeList struct {
 
 // Node 节点
 type Node struct {
-	Addr string //节点IP地址（公网环境下填公网IP）
-	Port int    //端口号
-	Name string //节点名称（自定义）
-	Data []byte //节点数据内容
+	Addr        string //节点IP地址（公网环境下填公网IP）
+	Port        int    //端口号
+	Name        string //节点名称（自定义）
+	PrivateData string //节点私有数据（自定义）
 }
 
 // 数据包
