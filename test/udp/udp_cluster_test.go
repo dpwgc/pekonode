@@ -44,10 +44,10 @@ func nodeA() {
 
 	//创建节点A及其本地节点列表
 	nodeList.New(pekonode.Node{
-		Addr: "0.0.0.0",  //本地节点IP地址，公网环境下请填写公网IP
-		Port: 8000,       //本地节点端口号
-		Name: "A-server", //节点名称，自定义填写
-		Tag:  "A",        //节点标签，自定义填写，可以填一些节点基本信息
+		Addr: "0.0.0.0",           //本地节点IP地址，公网环境下请填写公网IP
+		Port: 8000,                //本地节点端口号
+		Name: "A-server",          //节点名称，自定义填写
+		Data: []byte("test-data"), //节点标签，自定义填写，可以填一些节点基本信息
 	})
 
 	//因为是第一个启动的节点，所以不需要用Set函数添加其他节点
@@ -73,7 +73,7 @@ func nodeB() {
 		Addr: "0.0.0.0",
 		Port: 8001,
 		Name: "B-server",
-		Tag:  "B",
+		Data: []byte("test-data"),
 	})
 
 	//将初始节点A的信息加入到B节点的本地节点列表当中
@@ -81,7 +81,7 @@ func nodeB() {
 		Addr: "0.0.0.0",
 		Port: 8000,
 		Name: "A-server",
-		Tag:  "A", //将节点A的信息添加进节点B的本地节点列表
+		Data: []byte("test-data"),
 	})
 
 	//调用Join后，节点B会自动与节点A进行数据同步
@@ -104,7 +104,7 @@ func nodeC() {
 		Addr: "0.0.0.0",
 		Port: 8002,
 		Name: "C-server",
-		Tag:  "C",
+		Data: []byte("test-data"),
 	})
 
 	//也可以在加入集群之前，在本地节点列表中添加多个节点信息
@@ -112,13 +112,13 @@ func nodeC() {
 		Addr: "0.0.0.0",
 		Port: 8000,
 		Name: "A-server",
-		Tag:  "A", //将节点A的信息添加进节点C的本地节点列表
+		Data: []byte("test-data"),
 	})
 	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 8001,
 		Name: "B-server",
-		Tag:  "B", //将节点B的信息添加进节点C的本地节点列表
+		Data: []byte("test-data"),
 	})
 
 	//在加入集群后，节点C将会与上面的节点A及节点B进行数据同步
@@ -150,7 +150,7 @@ func nodeC() {
 		Addr: "0.0.0.0",
 		Port: 8001,
 		Name: "B-server",
-		Tag:  "B", //这里添加节点B的信息
+		Data: []byte("test-data"),
 	})
 
 	//重启节点C的心跳广播服务（节点C重新上线）
@@ -171,7 +171,7 @@ func nodeD() {
 		Addr: "0.0.0.0",
 		Port: 8003,
 		Name: "D-server",
-		Tag:  "D",
+		Data: []byte("test-data"),
 	})
 
 	//将初始节点A的信息加入到D节点的本地节点列表当中
@@ -179,7 +179,7 @@ func nodeD() {
 		Addr: "0.0.0.0",
 		Port: 8000,
 		Name: "A-server",
-		Tag:  "A", //将节点A的信息添加进节点D的本地节点列表
+		Data: []byte("test-data"),
 	})
 
 	//调用Join后，节点D会自动与节点A进行数据同步

@@ -125,10 +125,10 @@ func main()  {
 
 	// Create a local node list and pass in local node information
 	nodeList.New(pekonode.Node{
-		Addr: "0.0.0.0",  // IP address of the local node, please fill in the public network IP in the public network environment
-		Port: 8000,       // Local node port number
-		Name: "Test",     // Node name, fill in custom
-		Tag: "Test",	  // Node tag, custom fill, you can fill in some basic node information
+		Addr: "0.0.0.0",            // IP address of the local node, please fill in the public network IP in the public network environment
+		Port: 8000,                 // Local node port number
+		Name: "Test",               // Node name, fill in custom
+		Data: []byte("test-data"),  // Node data content, customize
 	})
 
 	// Add new node information to the local node list, you can add multiple nodes, the local node will synchronize information with these new nodes.
@@ -137,13 +137,13 @@ func main()  {
 		Addr: "0.0.0.0",
 		Port: 9999,
 		Name: "Hello",
-		Tag: "Hello",
+		Data: []byte("test-data"),
 	})
 	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 7777,
 		Name: "Hi",
-		Tag: "Hi",
+		Data: []byte("test-data"),
 	})
 
 	// Add the node to the Gossip cluster (start the heartbeat broadcast and listening coroutine in the background)
@@ -203,7 +203,7 @@ type Node struct {
 	Addr string     // Node IP address (in the public network environment, fill in the public network IP)
 	Port int        // The port number
 	Name string     // Node name (custom)
-	Tag  string     // Node tag (custom, you can write some basic information)
+	Data []byte     // Node data content (custom)
 }
 ```
 

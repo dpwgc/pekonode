@@ -125,10 +125,10 @@ func main()  {
 
 	//创建本地节点列表，传入本地节点信息
 	nodeList.New(pekonode.Node{
-		Addr: "0.0.0.0",		//本地节点IP地址，公网环境下请填写公网IP
-		Port: 8000,				//本地节点端口号
-		Name: "Test",           //节点名称，自定义填写
-		Tag: "Test",			//节点标签，自定义填写，可以填一些节点基本信息
+		Addr: "0.0.0.0",		            //本地节点IP地址，公网环境下请填写公网IP
+		Port: 8000,				            //本地节点端口号
+		Name: "Test",                       //节点名称，自定义填写
+		Data: []byte("test-data"),			//节点数据内容，自定义填入
 	})
 
 	//往本地节点列表中添加新的节点信息，可添加多个节点，本地节点将会与这些新节点同步信息
@@ -137,13 +137,13 @@ func main()  {
 		Addr: "0.0.0.0",
 		Port: 9999,
 		Name: "Hello",
-		Tag: "Hello",
+		Data: []byte("test-data"),
 	})
 	nodeList.Set(pekonode.Node{
 		Addr: "0.0.0.0",
 		Port: 7777,
 		Name: "Hi",
-		Tag: "Hi",
+		Data: []byte("test-data"),
 	})
 
 	//将该节点加入Gossip集群（在后台启动心跳广播与监听协程）
@@ -203,7 +203,7 @@ type Node struct {
 	Addr string     //节点IP地址（公网环境下填公网IP）
 	Port int        //端口号
 	Name string     //节点名称（自定义）
-	Tag  string     //节点标签（自定义，可以写一些基本信息）
+	Data []byte     //节点数据内容，自定义填入
 }
 ```
 

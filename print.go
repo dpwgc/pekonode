@@ -1,7 +1,6 @@
 package pekonode
 
 import (
-	"fmt"
 	"log"
 	"time"
 )
@@ -13,6 +12,6 @@ func (nodeList *NodeList) println(a ...interface{}) {
 		log.Println(a[1])
 	}
 	if nodeList.IsPrint {
-		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), a)
+		log.Println(time.Now().Format("2006-01-02 15:04:05"), a)
 	}
 }
