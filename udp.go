@@ -37,18 +37,19 @@ func udpListen(nodeList *NodeList, mq chan []byte) {
 	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", nodeList.ListenAddr, nodeList.localNode.Port))
 	if err != nil {
 		nodeList.println("[Error]:", err)
-		os.Exit(1)
+		return
 	}
 	conn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
 		nodeList.println("[Error]:", err)
-		os.Exit(1)
+		return
 	}
 	defer func(conn *net.UDPConn) {
 		err = conn.Close()
 		if err != nil {
 			nodeList.println("[Error]:", err)
 		}
+		os.Exit(1)
 	}(conn)
 
 	for {

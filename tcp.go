@@ -3,6 +3,7 @@ package pekonode
 import (
 	"fmt"
 	"net"
+	"os"
 )
 
 //向TCP服务端发送数据
@@ -13,22 +14,24 @@ func tcpWrite(nodeList *NodeList, addr string, port int, data []byte) {
 
 	if err != nil {
 		nodeList.println("[Error]:", err)
+		return
 	}
 
 	//建立服务器连接
 	conn, err := net.DialTCP("tcp", nil, server)
+
+	_, err = conn.Write(data) //给服务器发信息
+	if err != nil {
+		nodeList.println("[Error]:", err)
+	}
 
 	defer func(conn *net.TCPConn) {
 		err = conn.Close()
 		if err != nil {
 			nodeList.println("[Error]:", err)
 		}
+		os.Exit(1)
 	}(conn)
-
-	_, err = conn.Write(data) //给服务器发信息
-	if err != nil {
-		nodeList.println("[Error]:", err)
-	}
 }
 
 func tcpListen(nodeList *NodeList, mq chan []byte) {
@@ -42,6 +45,7 @@ func tcpListen(nodeList *NodeList, mq chan []byte) {
 		if err != nil {
 			nodeList.println("[Error]:", err)
 		}
+		os.Exit(1)
 	}(server)
 
 	for {
