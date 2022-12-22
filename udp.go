@@ -7,58 +7,58 @@ import (
 )
 
 // udpWrite 发送udp数据
-func udpWrite(addr string, port int, data []byte) {
+func udpWrite(nodeList *NodeList, addr string, port int, data []byte) {
 	socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
 		IP:   net.ParseIP(addr),
 		Port: port,
 	})
 	if err != nil {
-		println("[Error]:", err)
+		nodeList.println("[Error]:", err)
 		return
 	}
 
 	_, err = socket.Write(data) // 发送数据
 	if err != nil {
-		println("[Error]:", err)
+		nodeList.println("[Error]:", err)
 		return
 	}
 
 	defer func(socket *net.UDPConn) {
 		err = socket.Close()
 		if err != nil {
-			println("[Error]:", err)
+			nodeList.println("[Error]:", err)
 		}
 	}(socket)
 }
 
 // udpListen udp服务端监听
-func udpListen(addr string, port int, size int, mq chan []byte) {
+func udpListen(nodeList *NodeList, mq chan []byte) {
 
-	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
+	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", nodeList.ListenAddr, nodeList.localNode.Port))
 	if err != nil {
-		println("[Error]:", err)
+		nodeList.println("[Error]:", err)
 		os.Exit(1)
 	}
 	conn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		println("[Error]:", err)
+		nodeList.println("[Error]:", err)
 		os.Exit(1)
 	}
 	defer func(conn *net.UDPConn) {
 		err = conn.Close()
 		if err != nil {
-			println("[Error]:", err)
+			nodeList.println("[Error]:", err)
 		}
 	}(conn)
 
 	for {
 		//接收数组
-		bs := make([]byte, size)
+		bs := make([]byte, nodeList.Size)
 
 		//从UDP监听中接收数据
 		n, _, err := conn.ReadFromUDP(bs)
 		if err != nil {
-			println("[Error]:", err)
+			nodeList.println("[Error]:", err)
 			continue
 		}
 

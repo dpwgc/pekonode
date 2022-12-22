@@ -59,14 +59,14 @@ func consume(nodeList *NodeList, mq chan []byte) {
 
 		//如果数据包密钥与当前节点密钥不匹配
 		if p.SecretKey != nodeList.SecretKey {
-			println("[error]:", "The secretKey do not match")
+			nodeList.println("[Error]:", "The secretKey do not match")
 			//跳过，不处理该数据包
 			continue
 		}
 
 		//如果数据解析错误
 		if err != nil {
-			println("[error]:", err)
+			nodeList.println("[Error]:", err)
 			//跳过
 			continue
 		}
@@ -151,7 +151,7 @@ func broadcast(nodeList *NodeList, p packet) {
 	for _, v := range targetNodes {
 		bs, err := json.Marshal(p)
 		if err != nil {
-			println("[error]:", err)
+			nodeList.println("[Error]:", err)
 		}
 		//发送
 		write(nodeList, v.Addr, v.Port, bs)
@@ -176,7 +176,7 @@ func swapRequest(nodeList *NodeList) {
 
 	bs, err := json.Marshal(p)
 	if err != nil {
-		println("[error]:", err)
+		nodeList.println("[Error]:", err)
 	}
 
 	//在节点列表中随机选取一个节点，发起数据交换请求
@@ -209,7 +209,7 @@ func swapResponse(nodeList *NodeList, node Node) {
 
 	bs, err := json.Marshal(p)
 	if err != nil {
-		println("[error]:", err)
+		nodeList.println("[Error]:", err)
 	}
 
 	//回应发起节点
