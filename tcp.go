@@ -30,7 +30,6 @@ func tcpWrite(nodeList *NodeList, addr string, port int, data []byte) {
 		if err != nil {
 			nodeList.println("[Error]:", err)
 		}
-		os.Exit(1)
 	}(conn)
 }
 
