@@ -19,6 +19,10 @@ func tcpWrite(nodeList *NodeList, addr string, port int, data []byte) {
 
 	//建立服务器连接
 	conn, err := net.DialTCP("tcp", nil, server)
+	if err != nil {
+		nodeList.println("[Error]:", err)
+		return
+	}
 
 	_, err = conn.Write(data) //给服务器发信息
 	if err != nil {
