@@ -3,7 +3,6 @@ package pekonode
 import (
 	"fmt"
 	"net"
-	"os"
 )
 
 // udpWrite 发送udp数据
@@ -49,7 +48,6 @@ func udpListen(nodeList *NodeList, mq chan []byte) {
 		if err != nil {
 			nodeList.println("[Error]:", err)
 		}
-		os.Exit(1)
 	}(conn)
 
 	for {
