@@ -71,7 +71,7 @@ func (nodeList *NodeList) Join() {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -96,7 +96,7 @@ func (nodeList *NodeList) Stop() {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -110,7 +110,7 @@ func (nodeList *NodeList) Start() {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -131,7 +131,7 @@ func (nodeList *NodeList) Set(node Node) {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -149,7 +149,7 @@ func (nodeList *NodeList) Get() []Node {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return nil
 	}
@@ -173,7 +173,7 @@ func (nodeList *NodeList) Publish(newMetadata []byte) {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return
 	}
@@ -217,7 +217,7 @@ func (nodeList *NodeList) Read() []byte {
 
 	//如果该节点的本地节点列表还未初始化
 	if len(nodeList.localNode.Addr) == 0 {
-		println("[Error]:", "Please use the New() function first")
+		nodeList.println("[Error]:", "Please use the New() function first")
 		//直接返回
 		return nil
 	}
