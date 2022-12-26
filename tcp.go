@@ -3,7 +3,6 @@ package pekonode
 import (
 	"fmt"
 	"net"
-	"os"
 )
 
 //向TCP服务端发送数据
@@ -48,7 +47,6 @@ func tcpListen(nodeList *NodeList, mq chan []byte) {
 		if err != nil {
 			nodeList.println("[Error]:", err)
 		}
-		os.Exit(1)
 	}(server)
 
 	for {
