@@ -57,17 +57,17 @@ func consume(nodeList *NodeList, mq chan []byte) {
 		var p packet
 		err := json.Unmarshal(bs, &p)
 
-		//如果数据包密钥与当前节点密钥不匹配
-		if p.SecretKey != nodeList.SecretKey {
-			nodeList.println("[Error]:", "The secretKey do not match")
-			//跳过，不处理该数据包
-			continue
-		}
-
 		//如果数据解析错误
 		if err != nil {
 			nodeList.println("[Error]:", err)
 			//跳过
+			continue
+		}
+
+		//如果数据包密钥与当前节点密钥不匹配
+		if p.SecretKey != nodeList.SecretKey {
+			nodeList.println("[Error]:", "The secretKey do not match")
+			//跳过，不处理该数据包
 			continue
 		}
 
