@@ -61,6 +61,11 @@ func udpListen(nodeList *NodeList, mq chan []byte) {
 			continue
 		}
 
+		if n >= nodeList.Size {
+			nodeList.println("[Error]:", fmt.Sprintf("received data size (%v) exceeds the limit (%v)", n, nodeList.Size))
+			continue
+		}
+
 		//获取有效数据
 		b := bs[:n]
 

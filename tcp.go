@@ -64,6 +64,11 @@ func tcpListen(nodeList *NodeList, mq chan []byte) {
 				return
 			}
 
+			if n >= nodeList.Size {
+				nodeList.println("[Error]:", fmt.Sprintf("received data size (%v) exceeds the limit (%v)", n, nodeList.Size))
+				return
+			}
+
 			//获取有效数据
 			b := bs[:n]
 
